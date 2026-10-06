@@ -2,6 +2,9 @@
 
 An interactive, responsive single-file web dashboard analyzing open data on internships in Thailand across 1,250+ companies and 20 job categories.
 
+🌐 **Live Demo (GitHub Pages):** [https://kanokwantho.github.io/dasboard_by_666/](https://kanokwantho.github.io/dasboard_by_666/)  
+📁 **Repository:** [https://github.com/kanokwantho/dasboard_by_666](https://github.com/kanokwantho/dasboard_by_666)  
+
 ---
 
 ## 📌 Executive Summary & Project Purpose
