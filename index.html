@@ -1,0 +1,2438 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thailand Internship Open Data Dashboard 2026</title>
+  
+  <!-- Tailwind CSS CDN with typography & forms -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+              950: '#1e1b4b',
+            },
+            accent: {
+              500: '#06b6d4',
+              600: '#0891b2'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'Prompt', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts: Inter & Prompt for Thai/English typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome 6 Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Chart.js 4.4 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Prompt', 'Inter', sans-serif;
+    }
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.4);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(99, 102, 241, 0.8);
+    }
+    .editable-cell {
+      cursor: text;
+      transition: all 0.2s;
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+    .editable-cell:hover {
+      background-color: rgba(99, 102, 241, 0.15);
+      outline: 1px dashed #6366f1;
+    }
+    .editable-cell:focus {
+      background-color: rgba(99, 102, 241, 0.25);
+      outline: 2px solid #6366f1;
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .light .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .heat-cell {
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .heat-cell:hover {
+      transform: scale(1.08);
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen transition-colors duration-300">
+
+  <!-- Top Notification Toast Container -->
+  <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Header & Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-slate-900/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-800 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <!-- Logo and Title -->
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-accent-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white font-bold text-2xl">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-indigo-100 to-indigo-300 bg-clip-text text-transparent">
+                Thailand Internship Open Data
+              </h1>
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                2026 Edition
+              </span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-400">
+              สำรวจสถิติและการวิเคราะห์ความต้องการตลาดเด็กฝึกงานไทย (1,250+ องค์กร • 20 กลุ่มสายงาน)
+            </p>
+          </div>
+        </div>
+
+        <!-- Right Quick Controls -->
+        <div class="flex items-center gap-3">
+          <!-- Reset Data Button -->
+          <button id="btnResetData" title="รีเซ็ตข้อมูลเป็นค่าเริ่มต้น" class="p-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition flex items-center gap-2 text-xs font-medium">
+            <i class="fa-solid fa-arrow-rotate-left"></i>
+            <span class="hidden md:inline">Reset Data</span>
+          </button>
+
+          <!-- Export Dropdown / Buttons -->
+          <button id="btnExportCSV" class="px-3 py-2 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-medium transition flex items-center gap-1.5">
+            <i class="fa-solid fa-file-csv"></i>
+            <span class="hidden sm:inline">Export CSV</span>
+          </button>
+
+          <button id="btnExportJSON" class="px-3 py-2 rounded-lg bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 text-xs font-medium transition flex items-center gap-1.5">
+            <i class="fa-solid fa-file-code"></i>
+            <span class="hidden sm:inline">Export JSON</span>
+          </button>
+
+          <!-- Dark/Light Mode Toggle -->
+          <button id="themeToggle" class="p-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-400 border border-slate-700 transition" title="Toggle Theme">
+            <i class="fa-solid fa-sun text-sm"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Switcher Navigation -->
+      <div class="flex border-t border-slate-800/80 -mb-px space-x-1 sm:space-x-4 overflow-x-auto">
+        <button id="tabNav1" onclick="switchTab(1)" class="tab-btn flex items-center gap-2 py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold border-b-2 border-brand-500 text-brand-400 transition">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>1. ข้อมูลภาพรวม & เบี้ยเลี้ยง (Demographics)</span>
+          <span id="badgeTab1Count" class="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-brand-500/20 text-brand-300">20 สายงาน</span>
+        </button>
+
+        <button id="tabNav2" onclick="switchTab(2)" class="tab-btn flex items-center gap-2 py-3 px-3 sm:px-4 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+          <i class="fa-solid fa-microchip"></i>
+          <span>2. ทักษะ & ตลาดต้องการ (Skills & Tech)</span>
+          <span class="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-400">Heatmap & Radar</span>
+        </button>
+
+        <button id="tabNav3" onclick="switchTab(3)" class="tab-btn flex items-center gap-2 py-3 px-3 sm:px-4 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>3. วิเคราะห์ความคุ้มค่า & ความเข้มข้น (Analysis)</span>
+          <span class="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-400">Demand Matrix</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- ========================================== -->
+    <!-- TAB 1: INTERNSHIP DEMOGRAPHICS CONTENT     -->
+    <!-- ========================================== -->
+    <section id="tabContent1" class="tab-content space-y-6">
+
+      <!-- Top KPI Metric Cards (Tab 1) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- KPI 1: Total Companies -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition relative overflow-hidden group">
+          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-brand-500/10 rounded-full blur-xl group-hover:bg-brand-500/20 transition"></div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Companies</span>
+            <div class="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400">
+              <i class="fa-solid fa-building"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div id="kpiTotalCompanies" class="text-3xl font-extrabold text-white">1,250</div>
+            <p class="text-xs text-emerald-400 flex items-center gap-1 mt-1">
+              <i class="fa-solid fa-arrow-trend-up"></i>
+              <span>+18.4% จากปีก่อนหน้า (1,056 องค์กร)</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- KPI 2: Total Positions -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition relative overflow-hidden group">
+          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl group-hover:bg-cyan-500/20 transition"></div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Positions</span>
+            <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <i class="fa-solid fa-users-gear"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div id="kpiTotalPositions" class="text-3xl font-extrabold text-white">4,180</div>
+            <p class="text-xs text-slate-400 flex items-center gap-1 mt-1">
+              <span>เฉลี่ย 3.3 ตำแหน่ง ต่อ 1 บริษัท</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- KPI 3: Avg Daily Allowance -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition relative overflow-hidden group">
+          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition"></div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Avg. Daily Allowance</span>
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <i class="fa-solid fa-baht-sign"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="flex items-baseline gap-1.5">
+              <span id="kpiAvgAllowance" class="text-3xl font-extrabold text-white">418</span>
+              <span class="text-sm font-semibold text-emerald-400">THB / วัน</span>
+            </div>
+            <p class="text-xs text-slate-400 flex items-center gap-1 mt-1">
+              <span>เทียบเท่า 9,200 - 13,500 THB/เดือน</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- KPI 4: Top Demanded Field -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition relative overflow-hidden group">
+          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition"></div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Top Demanded Field</span>
+            <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+              <i class="fa-solid fa-trophy"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div id="kpiTopField" class="text-xl font-extrabold text-white truncate" title="Software Engineering">Software Eng.</div>
+            <p id="kpiTopFieldShare" class="text-xs text-purple-300 flex items-center gap-1 mt-1">
+              <span>600 ตำแหน่ง (14.4% ของตลาด)</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 1 Charts Row 1: Positions Rank & Work Format Donut -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Horizontal Bar Chart: Ranked 1-20 Categories -->
+        <div class="lg:col-span-2 glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-chart-simple text-indigo-400"></i>
+                <span>สัดส่วนจำนวนเปิดรับเด็กฝึกงานแยกตามสายงาน (Top 20 Categories)</span>
+              </h2>
+              <p class="text-xs text-slate-400">เรียงตามปริมาณตำแหน่งงานที่เปิดรับ (Live update เมื่อแก้ไขตารางด้านล่าง)</p>
+            </div>
+            <span class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+              หน่วย: จำนวนตำแหน่ง
+            </span>
+          </div>
+          <div class="relative flex-1 min-h-[360px]">
+            <canvas id="chartPositionsRank"></canvas>
+          </div>
+        </div>
+
+        <!-- Work Format Donut Chart -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-laptop-house text-cyan-400"></i>
+                <span>รูปแบบการทำงาน (Work Format)</span>
+              </h2>
+              <p class="text-xs text-slate-400">สัดส่วน On-site vs Hybrid vs Remote</p>
+            </div>
+          </div>
+          <div class="relative flex-1 min-h-[260px] flex items-center justify-center">
+            <canvas id="chartWorkFormat"></canvas>
+          </div>
+          <!-- Format Quick Metrics -->
+          <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-slate-800/80 text-center text-xs">
+            <div class="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+              <span class="text-slate-400 block text-[11px]">Hybrid</span>
+              <span id="metricFormatHybrid" class="font-bold text-emerald-400 text-sm">48.5%</span>
+            </div>
+            <div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+              <span class="text-slate-400 block text-[11px]">On-site</span>
+              <span id="metricFormatOnsite" class="font-bold text-amber-400 text-sm">38.2%</span>
+            </div>
+            <div class="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
+              <span class="text-slate-400 block text-[11px]">Remote</span>
+              <span id="metricFormatRemote" class="font-bold text-indigo-400 text-sm">13.3%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 1 Charts Row 2: Regional Distribution & Stipend Range Box-Bar -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Regional Distribution Bar Chart -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-map-location-dot text-rose-400"></i>
+                <span>การกระจายตัวของตำแหน่งฝึกงานตามภูมิภาค (Geographic Hubs)</span>
+              </h2>
+              <p class="text-xs text-slate-400">ศูนย์กลางเศรษฐกิจและหัวเมืองหลักในประเทศไทย</p>
+            </div>
+          </div>
+          <div class="relative flex-1 min-h-[260px]">
+            <canvas id="chartRegions"></canvas>
+          </div>
+        </div>
+
+        <!-- Stipend Range Comparison Bar Chart -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-money-bill-trend-up text-emerald-400"></i>
+                <span>ช่วงเบี้ยเลี้ยงรายวันต่ำสุด-สูงสุด-ค่าเฉลี่ย (THB/วัน)</span>
+              </h2>
+              <p class="text-xs text-slate-400">เปรียบเทียบอัตราผลตอบแทนแยกตามกลุ่มงานสำคัญ</p>
+            </div>
+          </div>
+          <div class="relative flex-1 min-h-[260px]">
+            <canvas id="chartStipendRange"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 1: Interactive & Editable Data Grid Section -->
+      <div class="glass-card rounded-2xl p-5 sm:p-6 border border-slate-800 shadow-xl space-y-4">
+        <!-- Grid Header, Search & Filter Bar -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-table-list text-brand-400"></i>
+                <span>ตารางข้อมูลสถิติเด็กฝึกงาน (Interactive Editable Data Grid)</span>
+              </h2>
+              <span class="text-xs px-2 py-0.5 rounded bg-brand-500/20 text-brand-300 border border-brand-500/30 font-mono">
+                Live Sync Enabled
+              </span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">
+              💡 คุณสามารถคลิกแก้ไขตัวเลขในคอลัมน์ <span class="text-indigo-400 font-semibold underline">จำนวนตำแหน่ง</span> หรือ <span class="text-emerald-400 font-semibold underline">เบี้ยเลี้ยง</span> ในตารางได้โดยตรง แล้วระบบจะคำนวณกราฟและ KPI ใหม่ทันที
+            </p>
+          </div>
+
+          <!-- Controls: Search, Format Filter, Reset -->
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Search Input -->
+            <div class="relative min-w-[220px]">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+              <input id="tableSearchInput" type="text" placeholder="ค้นหาสายงาน, ทักษะ, จังหวัด..." 
+                     class="w-full pl-9 pr-3 py-2 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition">
+            </div>
+
+            <!-- Cluster / Category Filter -->
+            <select id="filterCluster" class="py-2 px-3 text-xs rounded-lg bg-slate-900 border border-slate-700 text-slate-300 focus:outline-none focus:border-brand-500">
+              <option value="ALL">กลุ่มสายงานทั้งหมด (All)</option>
+              <option value="Technology">Technology & Software</option>
+              <option value="Creative">Creative & Media</option>
+              <option value="Business">Business & Marketing</option>
+              <option value="Operations">Operations & Engineering</option>
+            </select>
+
+            <!-- Work Format Filter -->
+            <select id="filterFormat" class="py-2 px-3 text-xs rounded-lg bg-slate-900 border border-slate-700 text-slate-300 focus:outline-none focus:border-brand-500">
+              <option value="ALL">ทุกรูปแบบการทำงาน</option>
+              <option value="HIGH_HYBRID">เน้น Hybrid (&gt;45%)</option>
+              <option value="HIGH_REMOTE">มี Remote (&gt;15%)</option>
+              <option value="HIGH_ONSITE">เน้น On-site (&gt;45%)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="overflow-x-auto rounded-xl border border-slate-800">
+          <table id="internshipDataTable" class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-900/90 text-slate-400 border-b border-slate-800 select-none">
+                <th onclick="sortTable('id')" class="py-3 px-3 cursor-pointer hover:text-white transition">
+                  # <i id="sortIcon_id" class="fa-solid fa-sort ml-1"></i>
+                </th>
+                <th onclick="sortTable('category')" class="py-3 px-4 cursor-pointer hover:text-white transition">
+                  สายงาน / สาขาวิชา (Job Category) <i id="sortIcon_category" class="fa-solid fa-sort ml-1"></i>
+                </th>
+                <th onclick="sortTable('cluster')" class="py-3 px-3 cursor-pointer hover:text-white transition">
+                  กลุ่มสายงาน <i id="sortIcon_cluster" class="fa-solid fa-sort ml-1"></i>
+                </th>
+                <th onclick="sortTable('positions')" class="py-3 px-3 cursor-pointer hover:text-white transition text-right">
+                  จำนวนตำแหน่ง (แก้ไขได้ ✍️) <i id="sortIcon_positions" class="fa-solid fa-sort ml-1"></i>
+                </th>
+                <th onclick="sortTable('percentage')" class="py-3 px-3 cursor-pointer hover:text-white transition text-right">
+                  สัดส่วน % <i id="sortIcon_percentage" class="fa-solid fa-sort ml-1"></i>
+                </th>
+                <th onclick="sortTable('stipend_daily_avg')" class="py-3 px-3 cursor-pointer hover:text-white transition text-right">
+                  เบี้ยเลี้ยงเฉลี่ย (บาท/วัน ✍️) <i id="sortIcon_stipend_daily_avg" class="fa-solid fa-sort ml-1"></i>
+                </th>
+                <th class="py-3 px-3 text-center">
+                  สัดส่วนทำงาน (On / Hyb / Rem)
+                </th>
+                <th class="py-3 px-3">
+                  ทักษะสำคัญ (Hard Skills)
+                </th>
+                <th class="py-3 px-3">
+                  หัวเมืองหลัก
+                </th>
+              </tr>
+            </thead>
+            <tbody id="tableBody" class="divide-y divide-slate-800/60 font-sans">
+              <!-- Rendered via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Table Pagination and Info Footer -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs text-slate-400">
+          <div id="tableInfoText">
+            แสดง 1 - 20 จากทั้งหมด 20 รายการ
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-slate-500">แสดงต่อหน้า:</span>
+            <select id="pageSizeSelect" onchange="changePageSize(this.value)" class="py-1 px-2 rounded bg-slate-900 border border-slate-700 text-slate-300 focus:outline-none">
+              <option value="10">10 แถว</option>
+              <option value="20" selected>20 แถว (ทั้งหมด)</option>
+            </select>
+            <div class="flex items-center gap-1 ml-2">
+              <button id="btnPrevPage" onclick="prevPage()" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-40 disabled:pointer-events-none">
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              <span id="pageIndicator" class="px-2 py-1 font-mono text-slate-300">1 / 1</span>
+              <button id="btnNextPage" onclick="nextPage()" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-40 disabled:pointer-events-none">
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- TAB 2: SKILLS & REQUIREMENTS CONTENT       -->
+    <!-- ========================================== -->
+    <section id="tabContent2" class="tab-content hidden space-y-6">
+
+      <!-- Top KPI Metric Cards (Tab 2) -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- KPI: Top Hard Skill -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Top Hard Skill In Demand</span>
+            <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+              <i class="fa-solid fa-code"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="text-2xl font-extrabold text-white">JavaScript / TypeScript</div>
+            <p class="text-xs text-indigo-300 flex items-center gap-1 mt-1">
+              <span>ระบุใน 78% ของตำแหน่งงานสายเทคฯ และดิจิทัล</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- KPI: Top Soft Skill -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Top Soft Skill In Demand</span>
+            <div class="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400">
+              <i class="fa-solid fa-lightbulb"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="text-2xl font-extrabold text-white">Problem Solving & Logic</div>
+            <p class="text-xs text-pink-300 flex items-center gap-1 mt-1">
+              <span>ความสามารถในการแก้ปัญหาเชิงโครงสร้างระบุมากกว่า 85%</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- KPI: Top Tool / Platform -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Top Tool / Software</span>
+            <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <i class="fa-solid fa-screwdriver-wrench"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="text-2xl font-extrabold text-white">Git & GitHub / Figma</div>
+            <p class="text-xs text-cyan-300 flex items-center gap-1 mt-1">
+              <span>เครื่องมือ Version Control และ Collaborative Design มาตรฐาน</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filter Control Banner for Tab 2 -->
+      <div class="glass-card rounded-2xl p-4 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-indigo-400"></i>
+          <div>
+            <span class="text-sm font-bold text-white">ตัวกรองวิเคราะห์ทักษะเฉพาะสายงาน:</span>
+            <span class="text-xs text-slate-400 block sm:inline sm:ml-1">เลือกเพื่อเจาะลึกทักษะทางเทคนิคและเครื่องมือเฉพาะด้าน</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <label for="skillCategorySelect" class="text-xs text-slate-400 whitespace-nowrap">สายงานเป้าหมาย:</label>
+          <select id="skillCategorySelect" onchange="updateSkillCharts()" class="py-2 px-3 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+            <option value="ALL">✨ รวมทุกสายงาน (All Categories Aggregated)</option>
+            <!-- Generated dynamically -->
+          </select>
+        </div>
+      </div>
+
+      <!-- Tab 2 Visuals: Hard Skills Bar Chart + Soft Skills Radar Chart -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- 10 อันดับ Hard Skills Bar Chart (7 Cols) -->
+        <div class="lg:col-span-7 glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-code text-indigo-400"></i>
+                <span id="hardSkillTitle">10 อันดับ Hard Skills ที่ต้องการมากที่สุด</span>
+              </h2>
+              <p class="text-xs text-slate-400">ความถี่และสัดส่วนที่ระบุในประกาศรับสมัคร</p>
+            </div>
+            <span class="text-xs px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 font-mono">
+              ความถี่การระบุ (%)
+            </span>
+          </div>
+          <div class="relative flex-1 min-h-[350px]">
+            <canvas id="chartHardSkills"></canvas>
+          </div>
+        </div>
+
+        <!-- Soft Skills Radar Chart (5 Cols) -->
+        <div class="lg:col-span-5 glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-compass-drafting text-pink-400"></i>
+                <span>Soft Skills Competency Radar</span>
+              </h2>
+              <p class="text-xs text-slate-400">ระดับความสำคัญของทักษะการทำงานร่วมกับผู้อื่น (คะแนน 1-100)</p>
+            </div>
+          </div>
+          <div class="relative flex-1 min-h-[350px] flex items-center justify-center">
+            <canvas id="chartSoftSkillsRadar"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tools & Software Interactive Bubble / Tag Cloud -->
+      <div class="glass-card rounded-2xl p-5 border border-slate-800">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-cubes-stacked text-amber-400"></i>
+              <span>เครื่องมือ, ภาษาโปรแกรม และ Software Platforms ยอดนิยม</span>
+            </h2>
+            <p class="text-xs text-slate-400">ขนาดและความเข้มของ Tag สะท้อนความถี่ที่ตลาดแรงงานฝึกงานระบุ</p>
+          </div>
+          <div class="flex items-center gap-3 text-xs text-slate-400">
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-indigo-500/80 inline-block"></span> เทคโนโลยีสูง</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500/80 inline-block"></span> ธุรกิจ & การตลาด</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-purple-500/80 inline-block"></span> ครีเอทีฟ & ดีไซน์</span>
+          </div>
+        </div>
+        <div id="toolsCloudContainer" class="flex flex-wrap gap-2.5 p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 justify-center">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <!-- Skill Heatmap Matrix Table -->
+      <div class="glass-card rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-border-all text-emerald-400"></i>
+              <span>Skill Heatmap Matrix: 20 สายงาน × Top 10 Core Skills & Tools</span>
+            </h2>
+            <p class="text-xs text-slate-400">ตารางความสัมพันธ์ระดับความต้องการทักษะ (สีเข้ม = ความต้องการสูงมาก > 75%)</p>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="text-slate-400">ระดับความต้องการ:</span>
+            <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px]">ต่ำ (&lt;20%)</span>
+            <span class="px-2 py-0.5 rounded bg-indigo-900/50 text-indigo-300 text-[10px]">ปานกลาง (20-60%)</span>
+            <span class="px-2 py-0.5 rounded bg-indigo-600 text-white font-bold text-[10px]">สูงมาก (&gt;60%)</span>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-800">
+          <table id="heatmapTable" class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-900 text-slate-300 border-b border-slate-800">
+                <th class="py-3 px-3 min-w-[200px] sticky left-0 bg-slate-900 z-10">สายงาน (Job Category)</th>
+                <th class="py-3 px-2 text-center">JavaScript / TS</th>
+                <th class="py-3 px-2 text-center">Python / AI</th>
+                <th class="py-3 px-2 text-center">SQL / Database</th>
+                <th class="py-3 px-2 text-center">Git & GitHub</th>
+                <th class="py-3 px-2 text-center">Figma / UI</th>
+                <th class="py-3 px-2 text-center">Digital Ads / SEO</th>
+                <th class="py-3 px-2 text-center">Data Analytics / BI</th>
+                <th class="py-3 px-2 text-center">Cloud / DevOps</th>
+                <th class="py-3 px-2 text-center">MS Excel / Sheets</th>
+                <th class="py-3 px-2 text-center">Video / Media Editing</th>
+              </tr>
+            </thead>
+            <tbody id="heatmapBody" class="divide-y divide-slate-800/60 font-sans">
+              <!-- Rendered via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- TAB 3: DEMAND & SKILL ANALYSIS CONTENT     -->
+    <!-- ========================================== -->
+    <section id="tabContent3" class="tab-content hidden space-y-6">
+
+      <!-- Top KPI Metric Cards (Tab 3) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Most Competitive Field -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Most Competitive Field</span>
+            <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+              <i class="fa-solid fa-fire-flame-curved"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="text-xl font-extrabold text-white truncate">AI & Machine Learning</div>
+            <p class="text-xs text-rose-300 flex items-center gap-1 mt-1">
+              <span>High Demand × 9.2 Skills Requirement</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Highest Compensation Field -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Top Compensation Field</span>
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <i class="fa-solid fa-crown"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="text-xl font-extrabold text-white truncate">Cloud & DevOps / AI</div>
+            <p class="text-xs text-emerald-300 flex items-center gap-1 mt-1">
+              <span>520 - 540 THB/วัน (สูงสุด 700 THB)</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Skill Diversity Index -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Skill Diversity Index</span>
+            <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+              <i class="fa-solid fa-network-wired"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="text-xl font-extrabold text-white">8.4 / 10.0</div>
+            <p class="text-xs text-indigo-300 flex items-center gap-1 mt-1">
+              <span>ตลาดต้องการทักษะแบบ Multi-disciplinary สูง</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Remote Friendly Leader -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Remote Leader</span>
+            <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <i class="fa-solid fa-earth-asia"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="text-xl font-extrabold text-white truncate">Software Eng & Marketing</div>
+            <p class="text-xs text-cyan-300 flex items-center gap-1 mt-1">
+              <span>โอกาสทำงานแบบ Hybrid/Remote &gt; 85%</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scatter Plot: Demand vs Compensation Matrix -->
+      <div class="glass-card rounded-2xl p-5 sm:p-6 border border-slate-800 flex flex-col">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-chart-line text-indigo-400"></i>
+              <span>Demand vs. Compensation Matrix (Scatter / Bubble Plot)</span>
+            </h2>
+            <p class="text-xs text-slate-400">
+              แกน X: ปริมาณเปิดรับ (ตำแหน่ง) | แกน Y: เบี้ยเลี้ยงเฉลี่ย (บาท/วัน) | ขนาด Bubble: ความเข้มข้นของทักษะ (Skill Intensity)
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 text-xs">
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              <span class="w-2 h-2 rounded-full bg-indigo-400"></span> Tech
+            </span>
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+              <span class="w-2 h-2 rounded-full bg-purple-400"></span> Creative
+            </span>
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Business
+            </span>
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span> Operations
+            </span>
+          </div>
+        </div>
+
+        <div class="relative flex-1 min-h-[420px]">
+          <canvas id="chartScatterMatrix"></canvas>
+        </div>
+
+        <!-- 4 Quadrants Legend / Strategic Interpretation -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-800 text-xs">
+          <div class="p-3 rounded-xl bg-slate-900/80 border border-indigo-500/30">
+            <span class="font-bold text-indigo-400 block mb-1">⭐ Q1: High Demand • High Pay</span>
+            <p class="text-slate-400 text-[11px]">Software Eng, Cloud/DevOps, AI/ML ตำแหน่งงานเยอะ ค่าตอบแทนสูง ทักษะเฉพาะทางเข้มข้น</p>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-900/80 border border-cyan-500/30">
+            <span class="font-bold text-cyan-400 block mb-1">🎯 Q2: High Demand • Standard Pay</span>
+            <p class="text-slate-400 text-[11px]">Digital Marketing, Graphic Design, Business Development รับจำนวนมาก โอกาสเริ่มงานง่าย</p>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-900/80 border border-amber-500/30">
+            <span class="font-bold text-amber-400 block mb-1">💎 Q3: Niche Specialist • Premium Pay</span>
+            <p class="text-slate-400 text-[11px]">Cybersecurity, Product Manager, Legal & Compliance เปิดรับเฉพาะกลุ่ม แต่ค่าตอบแทนพรีเมียม</p>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-900/80 border border-emerald-500/30">
+            <span class="font-bold text-emerald-400 block mb-1">🌱 Q4: Emerging & Operations</span>
+            <p class="text-slate-400 text-[11px]">HR, Supply Chain, Customer Success เสริมสร้างพื้นฐานงานองค์กร เน้นทักษะ Soft Skills</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skill Intensity Index Chart & Career Cluster Breakdown -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Skill Intensity Index Bar Chart (7 Cols) -->
+        <div class="lg:col-span-7 glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-gauge-high text-pink-400"></i>
+                <span>Skill Intensity Index (จำนวนทักษะเฉลี่ยที่คาดหวังต่อตำแหน่ง)</span>
+              </h2>
+              <p class="text-xs text-slate-400">สายงานที่ต้องการชุดทักษะเข้มข้นที่สุด (Top demanding skill stacks)</p>
+            </div>
+            <span class="text-xs px-2.5 py-1 rounded-full bg-pink-500/20 text-pink-300 font-mono">
+              เกณฑ์: 0 - 10 Skills
+            </span>
+          </div>
+          <div class="relative flex-1 min-h-[360px]">
+            <canvas id="chartSkillIntensity"></canvas>
+          </div>
+        </div>
+
+        <!-- Career Cluster Breakdown Cards (5 Cols) -->
+        <div class="lg:col-span-5 glass-card rounded-2xl p-5 border border-slate-800 flex flex-col justify-between">
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2 mb-1">
+              <i class="fa-solid fa-layer-group text-amber-400"></i>
+              <span>Hierarchical Cluster Breakdown</span>
+            </h2>
+            <p class="text-xs text-slate-400 mb-4">การกระจายตัวของ 4 กลุ่มอุตสาหกรรมหลัก</p>
+
+            <div class="space-y-3">
+              <!-- Cluster 1 -->
+              <div class="p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/30 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-laptop-code"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-bold text-white">Technology & Software</h4>
+                    <p class="text-[11px] text-slate-400">Software, Data, Cloud, AI, Cyber, QA</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-xs font-bold text-indigo-300 block">1,780 ตำแหน่ง</span>
+                  <span class="text-[10px] text-slate-400">42.6% สัดส่วน</span>
+                </div>
+              </div>
+
+              <!-- Cluster 2 -->
+              <div class="p-3 rounded-xl bg-purple-950/40 border border-purple-500/30 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-bold text-white">Creative & Design</h4>
+                    <p class="text-[11px] text-slate-400">UI/UX, Graphic Design, Video & Media</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-xs font-bold text-purple-300 block">750 ตำแหน่ง</span>
+                  <span class="text-[10px] text-slate-400">17.9% สัดส่วน</span>
+                </div>
+              </div>
+
+              <!-- Cluster 3 -->
+              <div class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-briefcase"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-bold text-white">Business & Marketing</h4>
+                    <p class="text-[11px] text-slate-400">Marketing, Sales, Finance, PM, E-Com</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-xs font-bold text-emerald-300 block">1,130 ตำแหน่ง</span>
+                  <span class="text-[10px] text-slate-400">27.0% สัดส่วน</span>
+                </div>
+              </div>
+
+              <!-- Cluster 4 -->
+              <div class="p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-gears"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-bold text-white">Operations & Engineering</h4>
+                    <p class="text-[11px] text-slate-400">HR, Logistics, Legal, Support, Industrial</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-xs font-bold text-amber-300 block">520 ตำแหน่ง</span>
+                  <span class="text-[10px] text-slate-400">12.4% สัดส่วน</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-slate-400">
+            💡 ข้อมูลอัปเดตสอดคล้องกับโครงสร้างตลาดแรงงานและการปรับตัวสู่ Digital Transformation
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="border-t border-slate-800/80 bg-slate-900/50 mt-12 py-6 text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <span class="font-semibold text-slate-400">Thailand Internship Open Data Project 2026</span>
+        <span>•</span>
+        <span>Single-file Interactive SPA</span>
+      </div>
+      <div class="flex items-center gap-4 text-slate-400">
+        <span><i class="fa-solid fa-code text-brand-400"></i> Pure Vanilla JS & Tailwind CSS</span>
+        <span>•</span>
+        <span><i class="fa-solid fa-chart-pie text-cyan-400"></i> Chart.js Powered</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================== -->
+  <!-- JAVASCRIPT LOGIC ENGINE & DATASET EMBEDDED                     -->
+  <!-- ============================================================== -->
+  <script>
+    /* ==============================================================
+       1. INITIAL DATASET: 20 Categories (Thailand Internship 2026)
+       ============================================================== */
+    const INITIAL_INTERNSHIP_DATA = [
+      {
+        id: 1,
+        category: "Software Engineering",
+        cluster: "Technology",
+        companies_count: 185,
+        positions: 600,
+        percentage: 14.35,
+        stipend_daily_min: 350,
+        stipend_daily_max: 600,
+        stipend_daily_avg: 475,
+        stipend_daily: "350-600 THB",
+        stipend_monthly: "8,000-15,000 THB",
+        work_format: { onsite: 15, hybrid: 60, remote: 25 },
+        locations: ["Bangkok & Metropolitan", "Chiang Mai"],
+        hard_skills: ["JavaScript/TypeScript", "Python", "React/Vue", "Git", "SQL"],
+        soft_skills: ["Problem Solving", "Critical Thinking", "Teamwork"],
+        tools: ["Git/GitHub", "VS Code", "Docker", "Postman", "Node.js"],
+        skill_intensity: 8.8,
+        competition_score: 9.2
+      },
+      {
+        id: 2,
+        category: "Digital Marketing & Growth",
+        cluster: "Business",
+        companies_count: 150,
+        positions: 460,
+        percentage: 11.00,
+        stipend_daily_min: 300,
+        stipend_daily_max: 450,
+        stipend_daily_avg: 375,
+        stipend_daily: "300-450 THB",
+        stipend_monthly: "6,500-11,000 THB",
+        work_format: { onsite: 35, hybrid: 50, remote: 15 },
+        locations: ["Bangkok & Metropolitan", "Chonburi", "Phuket"],
+        hard_skills: ["Meta Ads", "Google Analytics 4", "SEO/SEM", "TikTok Ads", "Content Strategy"],
+        soft_skills: ["Creative Thinking", "Adaptability", "Communication"],
+        tools: ["Meta Business Suite", "Google Analytics", "Canva", "TikTok Ads Manager", "Ahrefs"],
+        skill_intensity: 7.2,
+        competition_score: 7.8
+      },
+      {
+        id: 3,
+        category: "Data Science & Analytics",
+        cluster: "Technology",
+        companies_count: 110,
+        positions: 380,
+        percentage: 9.09,
+        stipend_daily_min: 380,
+        stipend_daily_max: 650,
+        stipend_daily_avg: 515,
+        stipend_daily: "380-650 THB",
+        stipend_monthly: "9,000-16,000 THB",
+        work_format: { onsite: 20, hybrid: 65, remote: 15 },
+        locations: ["Bangkok & Metropolitan", "Chiang Mai"],
+        hard_skills: ["Python", "SQL", "Pandas/NumPy", "Power BI/Tableau", "Machine Learning"],
+        soft_skills: ["Analytical Thinking", "Data Storytelling", "Attention to Detail"],
+        tools: ["Jupyter Notebook", "Tableau", "Power BI", "PostgreSQL", "BigQuery"],
+        skill_intensity: 8.9,
+        competition_score: 9.0
+      },
+      {
+        id: 4,
+        category: "UI/UX & Product Design",
+        cluster: "Creative",
+        companies_count: 95,
+        positions: 310,
+        percentage: 7.42,
+        stipend_daily_min: 320,
+        stipend_daily_max: 520,
+        stipend_daily_avg: 420,
+        stipend_daily: "320-520 THB",
+        stipend_monthly: "7,500-13,000 THB",
+        work_format: { onsite: 15, hybrid: 65, remote: 20 },
+        locations: ["Bangkok & Metropolitan", "Chiang Mai"],
+        hard_skills: ["Figma", "User Journey Mapping", "Wireframing", "Usability Testing", "Design System"],
+        soft_skills: ["Empathy", "Active Listening", "Problem Solving"],
+        tools: ["Figma", "FigJam", "Miro", "Adobe XD", "Protopie"],
+        skill_intensity: 7.6,
+        competition_score: 8.1
+      },
+      {
+        id: 5,
+        category: "Graphic Design & Multimedia",
+        cluster: "Creative",
+        companies_count: 90,
+        positions: 260,
+        percentage: 6.22,
+        stipend_daily_min: 280,
+        stipend_daily_max: 420,
+        stipend_daily_avg: 350,
+        stipend_daily: "280-420 THB",
+        stipend_monthly: "6,000-10,000 THB",
+        work_format: { onsite: 40, hybrid: 45, remote: 15 },
+        locations: ["Bangkok & Metropolitan", "Chiang Mai", "Khon Kaen"],
+        hard_skills: ["Adobe Photoshop", "Adobe Illustrator", "Typography", "Visual Branding", "Canva Pro"],
+        soft_skills: ["Creative Thinking", "Visual Storytelling", "Time Management"],
+        tools: ["Photoshop", "Illustrator", "InDesign", "Canva", "Midjourney"],
+        skill_intensity: 6.5,
+        competition_score: 7.1
+      },
+      {
+        id: 6,
+        category: "AI & Machine Learning",
+        cluster: "Technology",
+        companies_count: 75,
+        positions: 250,
+        percentage: 5.98,
+        stipend_daily_min: 400,
+        stipend_daily_max: 700,
+        stipend_daily_avg: 550,
+        stipend_daily: "400-700 THB",
+        stipend_monthly: "10,000-18,000 THB",
+        work_format: { onsite: 15, hybrid: 60, remote: 25 },
+        locations: ["Bangkok & Metropolitan"],
+        hard_skills: ["PyTorch/TensorFlow", "Generative AI/LLMs", "Python", "Data Pipeline", "LangChain"],
+        soft_skills: ["Mathematical Reasoning", "Curiosity", "Continuous Learning"],
+        tools: ["Hugging Face", "Ollama", "Weights & Biases", "Google Colab", "Docker"],
+        skill_intensity: 9.3,
+        competition_score: 9.6
+      },
+      {
+        id: 7,
+        category: "Business Development & Sales",
+        cluster: "Business",
+        companies_count: 70,
+        positions: 230,
+        percentage: 5.50,
+        stipend_daily_min: 300,
+        stipend_daily_max: 450,
+        stipend_daily_avg: 375,
+        stipend_daily: "300-450 THB",
+        stipend_monthly: "7,000-11,000 THB",
+        work_format: { onsite: 50, hybrid: 40, remote: 10 },
+        locations: ["Bangkok & Metropolitan", "Chonburi", "Rayong"],
+        hard_skills: ["B2B Prospecting", "CRM Systems", "Market Research", "Negotiation", "Pitch Deck"],
+        soft_skills: ["Persuasion", "Relationship Building", "Resilience"],
+        tools: ["HubSpot", "Salesforce", "LinkedIn Sales Nav", "Google Workspace", "Notion"],
+        skill_intensity: 6.8,
+        competition_score: 7.4
+      },
+      {
+        id: 8,
+        category: "Content Creator & Video",
+        cluster: "Creative",
+        companies_count: 65,
+        positions: 180,
+        percentage: 4.31,
+        stipend_daily_min: 280,
+        stipend_daily_max: 400,
+        stipend_daily_avg: 340,
+        stipend_daily: "280-400 THB",
+        stipend_monthly: "6,000-9,500 THB",
+        work_format: { onsite: 45, hybrid: 45, remote: 10 },
+        locations: ["Bangkok & Metropolitan", "Chiang Mai"],
+        hard_skills: ["Premiere Pro/CapCut", "Short-form Scripting", "TikTok/Reels Trend Analysis", "Lighting & Camera"],
+        soft_skills: ["Storytelling", "Humor & Engagement", "Fast Iteration"],
+        tools: ["CapCut", "Premiere Pro", "After Effects", "DaVinci Resolve", "Canva"],
+        skill_intensity: 6.3,
+        competition_score: 6.9
+      },
+      {
+        id: 9,
+        category: "Cloud & DevOps Engineering",
+        cluster: "Technology",
+        companies_count: 55,
+        positions: 170,
+        percentage: 4.07,
+        stipend_daily_min: 400,
+        stipend_daily_max: 650,
+        stipend_daily_avg: 525,
+        stipend_daily: "400-650 THB",
+        stipend_monthly: "9,500-16,000 THB",
+        work_format: { onsite: 10, hybrid: 60, remote: 30 },
+        locations: ["Bangkok & Metropolitan"],
+        hard_skills: ["Linux", "AWS/GCP", "Docker", "Kubernetes", "CI/CD Pipelines", "Terraform"],
+        soft_skills: ["Troubleshooting", "System Thinking", "Accountability"],
+        tools: ["Docker", "Kubernetes", "GitHub Actions", "Terraform", "AWS Console"],
+        skill_intensity: 9.1,
+        competition_score: 9.4
+      },
+      {
+        id: 10,
+        category: "Financial Analysis & Accounting",
+        cluster: "Business",
+        companies_count: 50,
+        positions: 160,
+        percentage: 3.83,
+        stipend_daily_min: 300,
+        stipend_daily_max: 480,
+        stipend_daily_avg: 390,
+        stipend_daily: "300-480 THB",
+        stipend_monthly: "7,000-11,500 THB",
+        work_format: { onsite: 55, hybrid: 40, remote: 5 },
+        locations: ["Bangkok & Metropolitan", "Chonburi"],
+        hard_skills: ["Financial Modeling", "Excel Advanced", "Tax & Audit", "ERP Systems", "Budget Forecasting"],
+        soft_skills: ["Integrity", "High Precision", "Stress Management"],
+        tools: ["MS Excel", "SAP", "Power BI", "Express Accounting", "QuickBooks"],
+        skill_intensity: 7.4,
+        competition_score: 7.7
+      },
+      {
+        id: 11,
+        category: "Product & Project Management",
+        cluster: "Business",
+        companies_count: 45,
+        positions: 140,
+        percentage: 3.35,
+        stipend_daily_min: 350,
+        stipend_daily_max: 550,
+        stipend_daily_avg: 450,
+        stipend_daily: "350-550 THB",
+        stipend_monthly: "8,000-13,500 THB",
+        work_format: { onsite: 20, hybrid: 65, remote: 15 },
+        locations: ["Bangkok & Metropolitan"],
+        hard_skills: ["Agile/Scrum", "PRD Writing", "Roadmapping", "Backlog Grooming", "Stakeholder Mgmt"],
+        soft_skills: ["Leadership", "Cross-functional Negotiation", "Communication"],
+        tools: ["Jira", "Confluence", "Notion", "Trello", "ClickUp"],
+        skill_intensity: 8.2,
+        competition_score: 8.6
+      },
+      {
+        id: 12,
+        category: "Cybersecurity & Network",
+        cluster: "Technology",
+        companies_count: 40,
+        positions: 130,
+        percentage: 3.11,
+        stipend_daily_min: 380,
+        stipend_daily_max: 620,
+        stipend_daily_avg: 500,
+        stipend_daily: "380-620 THB",
+        stipend_monthly: "8,500-15,000 THB",
+        work_format: { onsite: 30, hybrid: 55, remote: 15 },
+        locations: ["Bangkok & Metropolitan"],
+        hard_skills: ["Network Security", "Vulnerability Assessment", "Wireshark", "Linux Sec", "SIEM Tools"],
+        soft_skills: ["Ethical Mindset", "Deep Curiosity", "Crisis Comms"],
+        tools: ["Wireshark", "Burp Suite", "Kali Linux", "Splunk", "Nessus"],
+        skill_intensity: 8.7,
+        competition_score: 8.9
+      },
+      {
+        id: 13,
+        category: "Human Resources (HR & Talent)",
+        cluster: "Operations",
+        companies_count: 45,
+        positions: 130,
+        percentage: 3.11,
+        stipend_daily_min: 280,
+        stipend_daily_max: 400,
+        stipend_daily_avg: 340,
+        stipend_daily: "280-400 THB",
+        stipend_monthly: "6,000-9,500 THB",
+        work_format: { onsite: 50, hybrid: 45, remote: 5 },
+        locations: ["Bangkok & Metropolitan", "Chonburi", "Chiang Mai"],
+        hard_skills: ["Recruitment Screening", "HRIS Software", "Labor Law Basics", "Employee Engagement", "Training Prep"],
+        soft_skills: ["Interpersonal Skill", "Empathy", "Discretion"],
+        tools: ["Workday", "Darwinbox", "BambooHR", "Google Forms", "MS Excel"],
+        skill_intensity: 5.9,
+        competition_score: 6.2
+      },
+      {
+        id: 14,
+        category: "Quality Assurance & Testing (QA)",
+        cluster: "Technology",
+        companies_count: 40,
+        positions: 120,
+        percentage: 2.87,
+        stipend_daily_min: 320,
+        stipend_daily_max: 500,
+        stipend_daily_avg: 410,
+        stipend_daily: "320-500 THB",
+        stipend_monthly: "7,500-12,000 THB",
+        work_format: { onsite: 25, hybrid: 60, remote: 15 },
+        locations: ["Bangkok & Metropolitan"],
+        hard_skills: ["Test Cases Design", "Manual Testing", "Automation (Cypress/Selenium)", "Bug Tracking", "API Testing"],
+        soft_skills: ["Attention to Detail", "Critical Thinking", "Tenacity"],
+        tools: ["Postman", "Jira", "Selenium", "Cypress", "JMeter"],
+        skill_intensity: 7.5,
+        competition_score: 7.6
+      },
+      {
+        id: 15,
+        category: "Logistics & Supply Chain",
+        cluster: "Operations",
+        companies_count: 35,
+        positions: 110,
+        percentage: 2.63,
+        stipend_daily_min: 300,
+        stipend_daily_max: 420,
+        stipend_daily_avg: 360,
+        stipend_daily: "300-420 THB",
+        stipend_monthly: "6,500-10,000 THB",
+        work_format: { onsite: 70, hybrid: 25, remote: 5 },
+        locations: ["Bangkok & Metropolitan", "Chonburi/EEC", "Samut Prakan"],
+        hard_skills: ["Inventory Management", "ERP & WMS", "Import/Export Customs", "Fleet Coordination"],
+        soft_skills: ["Problem Solving Under Pressure", "Coordination", "Negotiation"],
+        tools: ["SAP ERP", "Oracle SCM", "MS Excel", "Power BI", "Google Sheets"],
+        skill_intensity: 6.5,
+        competition_score: 6.8
+      },
+      {
+        id: 16,
+        category: "E-Commerce & Online Operations",
+        cluster: "Business",
+        companies_count: 35,
+        positions: 100,
+        percentage: 2.39,
+        stipend_daily_min: 280,
+        stipend_daily_max: 420,
+        stipend_daily_avg: 350,
+        stipend_daily: "280-420 THB",
+        stipend_monthly: "6,000-10,000 THB",
+        work_format: { onsite: 35, hybrid: 50, remote: 15 },
+        locations: ["Bangkok & Metropolitan"],
+        hard_skills: ["Shopee/Lazada Seller Center", "Live Streaming Ops", "Order Fulfillment", "Campaign Setup"],
+        soft_skills: ["Multitasking", "Agility", "Customer Focus"],
+        tools: ["Shopee Seller Centre", "Lazada University", "TikTok Shop Partner", "Canva"],
+        skill_intensity: 6.0,
+        competition_score: 6.5
+      },
+      {
+        id: 17,
+        category: "PR & Corporate Communications",
+        cluster: "Business",
+        companies_count: 30,
+        positions: 80,
+        percentage: 1.91,
+        stipend_daily_min: 280,
+        stipend_daily_max: 400,
+        stipend_daily_avg: 340,
+        stipend_daily: "280-400 THB",
+        stipend_monthly: "6,000-9,500 THB",
+        work_format: { onsite: 45, hybrid: 45, remote: 10 },
+        locations: ["Bangkok & Metropolitan"],
+        hard_skills: ["Press Release Drafting", "Media Relations", "Crisis Management", "Event Organizing"],
+        soft_skills: ["Public Speaking", "Diplomacy", "Polite Negotiation"],
+        tools: ["Canva", "MS PowerPoint", "Mailchimp", "Google Workspace", "Notion"],
+        skill_intensity: 6.2,
+        competition_score: 6.4
+      },
+      {
+        id: 18,
+        category: "Mechanical & Industrial Eng.",
+        cluster: "Operations",
+        companies_count: 30,
+        positions: 80,
+        percentage: 1.91,
+        stipend_daily_min: 350,
+        stipend_daily_max: 500,
+        stipend_daily_avg: 425,
+        stipend_daily: "350-500 THB",
+        stipend_monthly: "8,000-12,000 THB",
+        work_format: { onsite: 85, hybrid: 15, remote: 0 },
+        locations: ["Chonburi/EEC", "Rayong", "Ayutthaya"],
+        hard_skills: ["AutoCAD/SolidWorks", "Lean Manufacturing", "Quality Control (QC/QA)", "PLC Basics"],
+        soft_skills: ["Safety Mindset", "Root Cause Analysis", "Discipline"],
+        tools: ["AutoCAD", "SolidWorks", "MATLAB", "Minitab", "MS Project"],
+        skill_intensity: 7.9,
+        competition_score: 7.5
+      },
+      {
+        id: 19,
+        category: "Customer Success & Client Care",
+        cluster: "Operations",
+        companies_count: 25,
+        positions: 70,
+        percentage: 1.67,
+        stipend_daily_min: 280,
+        stipend_daily_max: 400,
+        stipend_daily_avg: 340,
+        stipend_daily: "280-400 THB",
+        stipend_monthly: "6,000-9,500 THB",
+        work_format: { onsite: 30, hybrid: 50, remote: 20 },
+        locations: ["Bangkok & Metropolitan", "Chiang Mai"],
+        hard_skills: ["Zendesk/Intercom", "Ticket Resolution", "User Onboarding", "CSAT Measurement"],
+        soft_skills: ["Patience & Empathy", "De-escalation", "Communication"],
+        tools: ["Zendesk", "Intercom", "Freshdesk", "Slack", "HubSpot"],
+        skill_intensity: 5.7,
+        competition_score: 5.8
+      },
+      {
+        id: 20,
+        category: "Legal & Corporate Compliance",
+        cluster: "Operations",
+        companies_count: 20,
+        positions: 50,
+        percentage: 1.20,
+        stipend_daily_min: 350,
+        stipend_daily_max: 550,
+        stipend_daily_avg: 450,
+        stipend_daily: "350-550 THB",
+        stipend_monthly: "8,000-13,500 THB",
+        work_format: { onsite: 50, hybrid: 45, remote: 5 },
+        locations: ["Bangkok & Metropolitan"],
+        hard_skills: ["Contract Drafting & Review", "PDPA Compliance", "Regulatory Research", "Due Diligence"],
+        soft_skills: ["High Attention to Detail", "Confidentiality", "Logical Reasoning"],
+        tools: ["MS Word", "DocuSign", "ThaiLaw Database", "Notion", "LexisNexis"],
+        skill_intensity: 8.0,
+        competition_score: 8.2
+      }
+    ];
+
+    /* Working Mutable Dataset */
+    let internshipData = JSON.parse(JSON.stringify(INITIAL_INTERNSHIP_DATA));
+
+    /* Global State */
+    let currentTab = 1;
+    let tableCurrentPage = 1;
+    let tablePageSize = 20;
+    let tableSortColumn = 'positions';
+    let tableSortDirection = 'desc';
+
+    /* Chart.js Global Registry references */
+    let chartPositionsRankInstance = null;
+    let chartWorkFormatInstance = null;
+    let chartRegionsInstance = null;
+    let chartStipendRangeInstance = null;
+    let chartHardSkillsInstance = null;
+    let chartSoftSkillsRadarInstance = null;
+    let chartScatterMatrixInstance = null;
+    let chartSkillIntensityInstance = null;
+
+    /* ==============================================================
+       2. TAB NAVIGATION SYSTEM
+       ============================================================== */
+    function switchTab(tabNumber) {
+      currentTab = tabNumber;
+
+      // Update Nav Buttons
+      for (let i = 1; i <= 3; i++) {
+        const navBtn = document.getElementById(`tabNav${i}`);
+        const contentSec = document.getElementById(`tabContent${i}`);
+        if (i === tabNumber) {
+          navBtn.classList.add('border-brand-500', 'text-brand-400');
+          navBtn.classList.remove('border-transparent', 'text-slate-400');
+          contentSec.classList.remove('hidden');
+        } else {
+          navBtn.classList.remove('border-brand-500', 'text-brand-400');
+          navBtn.classList.add('border-transparent', 'text-slate-400');
+          contentSec.classList.add('hidden');
+        }
+      }
+
+      // Resize or render charts on active tab
+      setTimeout(() => {
+        if (tabNumber === 1) {
+          if (chartPositionsRankInstance) chartPositionsRankInstance.resize();
+          if (chartWorkFormatInstance) chartWorkFormatInstance.resize();
+          if (chartRegionsInstance) chartRegionsInstance.resize();
+          if (chartStipendRangeInstance) chartStipendRangeInstance.resize();
+        } else if (tabNumber === 2) {
+          if (!chartHardSkillsInstance) {
+            initTab2Visuals();
+          } else {
+            chartHardSkillsInstance.resize();
+            chartSoftSkillsRadarInstance.resize();
+          }
+        } else if (tabNumber === 3) {
+          if (!chartScatterMatrixInstance) {
+            initTab3Visuals();
+          } else {
+            chartScatterMatrixInstance.resize();
+            chartSkillIntensityInstance.resize();
+          }
+        }
+      }, 50);
+    }
+
+    /* ==============================================================
+       3. METRICS RECALCULATION & KPI UPDATES
+       ============================================================== */
+    function recalculateMetrics() {
+      const totalPositions = internshipData.reduce((sum, item) => sum + Number(item.positions || 0), 0);
+      const totalCompanies = internshipData.reduce((sum, item) => sum + Number(item.companies_count || 0), 0);
+
+      // Recalculate percentages
+      internshipData.forEach(item => {
+        item.percentage = totalPositions > 0 ? Number(((item.positions / totalPositions) * 100).toFixed(2)) : 0;
+      });
+
+      // Weighted average daily allowance
+      let weightedAllowanceSum = 0;
+      internshipData.forEach(item => {
+        weightedAllowanceSum += (Number(item.positions || 0) * Number(item.stipend_daily_avg || 0));
+      });
+      const avgAllowance = totalPositions > 0 ? Math.round(weightedAllowanceSum / totalPositions) : 0;
+
+      // Top demanded field
+      let topItem = internshipData[0];
+      internshipData.forEach(item => {
+        if (Number(item.positions) > Number(topItem.positions)) {
+          topItem = item;
+        }
+      });
+
+      // Update KPI Cards
+      document.getElementById('kpiTotalCompanies').textContent = totalCompanies.toLocaleString();
+      document.getElementById('kpiTotalPositions').textContent = totalPositions.toLocaleString();
+      document.getElementById('kpiAvgAllowance').textContent = avgAllowance.toLocaleString();
+      if (topItem) {
+        document.getElementById('kpiTopField').textContent = topItem.category;
+        document.getElementById('kpiTopField').title = topItem.category;
+        document.getElementById('kpiTopFieldShare').innerHTML = `<span>${topItem.positions.toLocaleString()} ตำแหน่ง (${topItem.percentage}% ของตลาด)</span>`;
+      }
+
+      // Recalculate overall Work Format ratios
+      let totalHybridPositions = 0;
+      let totalOnsitePositions = 0;
+      let totalRemotePositions = 0;
+
+      internshipData.forEach(item => {
+        const p = Number(item.positions) || 0;
+        totalHybridPositions += p * ((item.work_format?.hybrid || 0) / 100);
+        totalOnsitePositions += p * ((item.work_format?.onsite || 0) / 100);
+        totalRemotePositions += p * ((item.work_format?.remote || 0) / 100);
+      });
+
+      const hybridPct = totalPositions > 0 ? ((totalHybridPositions / totalPositions) * 100).toFixed(1) : 0;
+      const onsitePct = totalPositions > 0 ? ((totalOnsitePositions / totalPositions) * 100).toFixed(1) : 0;
+      const remotePct = totalPositions > 0 ? ((totalRemotePositions / totalPositions) * 100).toFixed(1) : 0;
+
+      document.getElementById('metricFormatHybrid').textContent = `${hybridPct}%`;
+      document.getElementById('metricFormatOnsite').textContent = `${onsitePct}%`;
+      document.getElementById('metricFormatRemote').textContent = `${remotePct}%`;
+
+      // Update Chart Instances if active
+      updateDemographicsCharts(hybridPct, onsitePct, remotePct);
+      if (chartScatterMatrixInstance) updateTab3Charts();
+    }
+
+    /* ==============================================================
+       4. TAB 1 CHARTS (DEMOGRAPHICS)
+       ============================================================== */
+    function initTab1Charts() {
+      // 1. Chart: Positions Rank (Horizontal Bar)
+      const sortedData = [...internshipData].sort((a, b) => b.positions - a.positions);
+      const ctxRank = document.getElementById('chartPositionsRank').getContext('2d');
+      chartPositionsRankInstance = new Chart(ctxRank, {
+        type: 'bar',
+        data: {
+          labels: sortedData.map(d => d.category),
+          datasets: [{
+            label: 'จำนวนตำแหน่งงาน',
+            data: sortedData.map(d => d.positions),
+            backgroundColor: sortedData.map((d, i) => i === 0 ? '#818cf8' : i < 3 ? '#6366f1' : 'rgba(99, 102, 241, 0.4)'),
+            borderColor: '#6366f1',
+            borderWidth: 1,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.raw.toLocaleString()} ตำแหน่ง (${((ctx.raw / internshipData.reduce((s, x) => s + x.positions, 0)) * 100).toFixed(1)}%)`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8' }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: '#e2e8f0', font: { size: 11 } }
+            }
+          }
+        }
+      });
+
+      // 2. Chart: Work Format (Donut)
+      const ctxFormat = document.getElementById('chartWorkFormat').getContext('2d');
+      chartWorkFormatInstance = new Chart(ctxFormat, {
+        type: 'doughnut',
+        data: {
+          labels: ['Hybrid (ไฮบริด)', 'On-site (เข้าออฟฟิศ)', 'Remote (ทำงานระยะไกล)'],
+          datasets: [{
+            data: [48.5, 38.2, 13.3],
+            backgroundColor: ['#10b981', '#f59e0b', '#6366f1'],
+            borderColor: '#0f172a',
+            borderWidth: 3,
+            hoverOffset: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: '#94a3b8', font: { size: 11 }, padding: 14 }
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.label}: ${ctx.raw}%`
+              }
+            }
+          },
+          cutout: '68%'
+        }
+      });
+
+      // 3. Chart: Regional Distribution
+      const ctxRegions = document.getElementById('chartRegions').getContext('2d');
+      chartRegionsInstance = new Chart(ctxRegions, {
+        type: 'bar',
+        data: {
+          labels: ['กรุงเทพฯ & ปริมณฑล', 'ชลบุรี / ระยอง (EEC)', 'เชียงใหม่ (ภาคเหนือ)', 'ภูเก็ต (ภาคใต้)', 'ขอนแก่น (อีสาน)', 'Remote ทั่วประเทศ'],
+          datasets: [{
+            label: 'สัดส่วนเปิดรับ (%)',
+            data: [64.5, 12.8, 9.2, 4.5, 3.2, 5.8],
+            backgroundColor: ['#6366f1', '#06b6d4', '#ec4899', '#f97316', '#10b981', '#8b5cf6'],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.raw}% ของตำแหน่งงานเปิดรับทั้งหมด`
+              }
+            }
+          },
+          scales: {
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', callback: (v) => v + '%' }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#cbd5e1', font: { size: 11 } }
+            }
+          }
+        }
+      });
+
+      // 4. Chart: Stipend Range (Min, Avg, Max for top categories)
+      const topCategoriesForStipend = internshipData.slice(0, 8);
+      const ctxStipend = document.getElementById('chartStipendRange').getContext('2d');
+      chartStipendRangeInstance = new Chart(ctxStipend, {
+        type: 'bar',
+        data: {
+          labels: topCategoriesForStipend.map(d => d.category.split(' ')[0]),
+          datasets: [
+            {
+              label: 'ค่าเฉลี่ย (Avg)',
+              data: topCategoriesForStipend.map(d => d.stipend_daily_avg),
+              backgroundColor: '#10b981',
+              borderRadius: 4
+            },
+            {
+              label: 'ต่ำสุด (Min)',
+              data: topCategoriesForStipend.map(d => d.stipend_daily_min),
+              backgroundColor: '#64748b',
+              borderRadius: 4
+            },
+            {
+              label: 'สูงสุด (Max)',
+              data: topCategoriesForStipend.map(d => d.stipend_daily_max),
+              backgroundColor: '#6366f1',
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { color: '#94a3b8', font: { size: 11 } }
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.dataset.label}: ${ctx.raw} THB / วัน`
+              }
+            }
+          },
+          scales: {
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8' }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#cbd5e1', font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    function updateDemographicsCharts(hybridPct, onsitePct, remotePct) {
+      if (chartPositionsRankInstance) {
+        const sortedData = [...internshipData].sort((a, b) => b.positions - a.positions);
+        chartPositionsRankInstance.data.labels = sortedData.map(d => d.category);
+        chartPositionsRankInstance.data.datasets[0].data = sortedData.map(d => d.positions);
+        chartPositionsRankInstance.update();
+      }
+
+      if (chartWorkFormatInstance) {
+        chartWorkFormatInstance.data.datasets[0].data = [
+          Number(hybridPct),
+          Number(onsitePct),
+          Number(remotePct)
+        ];
+        chartWorkFormatInstance.update();
+      }
+
+      if (chartStipendRangeInstance) {
+        const topCategoriesForStipend = internshipData.slice(0, 8);
+        chartStipendRangeInstance.data.labels = topCategoriesForStipend.map(d => d.category.split(' ')[0]);
+        chartStipendRangeInstance.data.datasets[0].data = topCategoriesForStipend.map(d => d.stipend_daily_avg);
+        chartStipendRangeInstance.data.datasets[1].data = topCategoriesForStipend.map(d => d.stipend_daily_min);
+        chartStipendRangeInstance.data.datasets[2].data = topCategoriesForStipend.map(d => d.stipend_daily_max);
+        chartStipendRangeInstance.update();
+      }
+    }
+
+    /* ==============================================================
+       5. INTERACTIVE & EDITABLE DATA TABLE (TAB 1)
+       ============================================================== */
+    function renderTable() {
+      const searchVal = document.getElementById('tableSearchInput')?.value?.toLowerCase() || '';
+      const clusterVal = document.getElementById('filterCluster')?.value || 'ALL';
+      const formatVal = document.getElementById('filterFormat')?.value || 'ALL';
+
+      // Filtering
+      let filtered = internshipData.filter(item => {
+        const matchSearch = item.category.toLowerCase().includes(searchVal) ||
+                            item.cluster.toLowerCase().includes(searchVal) ||
+                            item.hard_skills.some(s => s.toLowerCase().includes(searchVal)) ||
+                            item.locations.some(l => l.toLowerCase().includes(searchVal));
+
+        const matchCluster = clusterVal === 'ALL' || item.cluster === clusterVal;
+
+        let matchFormat = true;
+        if (formatVal === 'HIGH_HYBRID') matchFormat = item.work_format.hybrid >= 45;
+        else if (formatVal === 'HIGH_REMOTE') matchFormat = item.work_format.remote >= 15;
+        else if (formatVal === 'HIGH_ONSITE') matchFormat = item.work_format.onsite >= 45;
+
+        return matchSearch && matchCluster && matchFormat;
+      });
+
+      // Sorting
+      filtered.sort((a, b) => {
+        let valA = a[tableSortColumn];
+        let valB = b[tableSortColumn];
+
+        if (typeof valA === 'string') {
+          return tableSortDirection === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        } else {
+          return tableSortDirection === 'asc' ? valA - valB : valB - valA;
+        }
+      });
+
+      // Update Sort Header Icons
+      ['id', 'category', 'cluster', 'positions', 'percentage', 'stipend_daily_avg'].forEach(col => {
+        const icon = document.getElementById(`sortIcon_${col}`);
+        if (icon) {
+          if (tableSortColumn === col) {
+            icon.className = tableSortDirection === 'asc' ? 'fa-solid fa-sort-up ml-1 text-brand-400' : 'fa-solid fa-sort-down ml-1 text-brand-400';
+          } else {
+            icon.className = 'fa-solid fa-sort ml-1 text-slate-600';
+          }
+        }
+      });
+
+      // Pagination
+      const totalRows = filtered.length;
+      const totalPages = Math.ceil(totalRows / tablePageSize) || 1;
+      if (tableCurrentPage > totalPages) tableCurrentPage = totalPages;
+
+      const startIndex = (tableCurrentPage - 1) * tablePageSize;
+      const paginatedRows = filtered.slice(startIndex, startIndex + tablePageSize);
+
+      // Render Rows
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      if (paginatedRows.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="py-8 text-center text-slate-500">
+              <i class="fa-solid fa-magnifying-glass text-2xl mb-2 block"></i>
+              ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา
+            </td>
+          </tr>
+        `;
+      } else {
+        paginatedRows.forEach(row => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-800/40 transition border-b border-slate-800/50';
+
+          // Cluster badge color
+          let clusterBadgeClass = 'bg-slate-800 text-slate-300 border-slate-700';
+          if (row.cluster === 'Technology') clusterBadgeClass = 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20';
+          else if (row.cluster === 'Creative') clusterBadgeClass = 'bg-purple-500/10 text-purple-300 border-purple-500/20';
+          else if (row.cluster === 'Business') clusterBadgeClass = 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20';
+          else if (row.cluster === 'Operations') clusterBadgeClass = 'bg-amber-500/10 text-amber-300 border-amber-500/20';
+
+          tr.innerHTML = `
+            <td class="py-3 px-3 font-mono text-slate-500">${row.id}</td>
+            <td class="py-3 px-4 font-semibold text-white">
+              <div class="flex items-center gap-2">
+                <span>${row.category}</span>
+              </div>
+            </td>
+            <td class="py-3 px-3">
+              <span class="inline-block px-2 py-0.5 rounded text-[11px] border ${clusterBadgeClass}">
+                ${row.cluster}
+              </span>
+            </td>
+            <td class="py-3 px-3 text-right">
+              <span class="editable-cell font-mono font-bold text-indigo-300" 
+                    contenteditable="true" 
+                    title="คลิกเพื่อแก้ไขจำนวนตำแหน่ง"
+                    onblur="handleCellEdit(${row.id}, 'positions', this.textContent)"
+                    onkeydown="handleCellKeyDown(event, this)">
+                ${row.positions}
+              </span>
+            </td>
+            <td class="py-3 px-3 text-right font-mono text-slate-300">${row.percentage}%</td>
+            <td class="py-3 px-3 text-right">
+              <span class="editable-cell font-mono font-semibold text-emerald-300"
+                    contenteditable="true"
+                    title="คลิกเพื่อแก้ไขเบี้ยเลี้ยงเฉลี่ย (บาท/วัน)"
+                    onblur="handleCellEdit(${row.id}, 'stipend_daily_avg', this.textContent)"
+                    onkeydown="handleCellKeyDown(event, this)">
+                ${row.stipend_daily_avg}
+              </span>
+              <span class="text-slate-500 text-[10px] block">${row.stipend_monthly}</span>
+            </td>
+            <td class="py-3 px-3">
+              <div class="flex items-center justify-center gap-1.5 font-mono text-[10px]">
+                <span class="text-amber-400" title="Onsite">${row.work_format.onsite}%</span>
+                <span class="text-slate-600">/</span>
+                <span class="text-emerald-400 font-bold" title="Hybrid">${row.work_format.hybrid}%</span>
+                <span class="text-slate-600">/</span>
+                <span class="text-indigo-400" title="Remote">${row.work_format.remote}%</span>
+              </div>
+              <div class="w-24 mx-auto bg-slate-800 h-1.5 rounded-full overflow-hidden flex mt-1">
+                <div style="width: ${row.work_format.onsite}%" class="bg-amber-400"></div>
+                <div style="width: ${row.work_format.hybrid}%" class="bg-emerald-400"></div>
+                <div style="width: ${row.work_format.remote}%" class="bg-indigo-400"></div>
+              </div>
+            </td>
+            <td class="py-3 px-3">
+              <div class="flex flex-wrap gap-1 max-w-[220px]">
+                ${row.hard_skills.slice(0, 3).map(s => `
+                  <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] border border-slate-700/60">${s}</span>
+                `).join('')}
+                ${row.hard_skills.length > 3 ? `<span class="text-slate-500 text-[10px] self-center">+${row.hard_skills.length - 3}</span>` : ''}
+              </div>
+            </td>
+            <td class="py-3 px-3 text-slate-400">
+              <span class="truncate block max-w-[140px]" title="${row.locations.join(', ')}">
+                ${row.locations.join(', ')}
+              </span>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // Pagination Controls Update
+      document.getElementById('tableInfoText').textContent = `แสดง ${totalRows === 0 ? 0 : startIndex + 1} - ${Math.min(startIndex + tablePageSize, totalRows)} จากทั้งหมด ${totalRows} รายการ`;
+      document.getElementById('pageIndicator').textContent = `${tableCurrentPage} / ${totalPages}`;
+      document.getElementById('btnPrevPage').disabled = tableCurrentPage <= 1;
+      document.getElementById('btnNextPage').disabled = tableCurrentPage >= totalPages;
+    }
+
+    function sortTable(column) {
+      if (tableSortColumn === column) {
+        tableSortDirection = tableSortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        tableSortColumn = column;
+        tableSortDirection = (column === 'category' || column === 'cluster') ? 'asc' : 'desc';
+      }
+      renderTable();
+    }
+
+    function changePageSize(val) {
+      tablePageSize = Number(val);
+      tableCurrentPage = 1;
+      renderTable();
+    }
+
+    function prevPage() {
+      if (tableCurrentPage > 1) {
+        tableCurrentPage--;
+        renderTable();
+      }
+    }
+
+    function nextPage() {
+      tableCurrentPage++;
+      renderTable();
+    }
+
+    function handleCellKeyDown(e, element) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        element.blur();
+      }
+    }
+
+    function handleCellEdit(id, field, value) {
+      const cleanVal = Number(value.replace(/[^0-9]/g, ''));
+      if (isNaN(cleanVal) || cleanVal <= 0) {
+        showToast('กรุณากรอกตัวเลขจำนวนเต็มที่ถูกต้อง', 'warning');
+        renderTable();
+        return;
+      }
+
+      const item = internshipData.find(d => d.id === id);
+      if (item && item[field] !== cleanVal) {
+        item[field] = cleanVal;
+        showToast(`อัปเดตข้อมูล ${item.category} (${field}: ${cleanVal}) สำเร็จ!`, 'success');
+        recalculateMetrics();
+        renderTable();
+      }
+    }
+
+    /* ==============================================================
+       6. TAB 2 VISUALS (SKILLS & TECH)
+       ============================================================== */
+    function initTab2Visuals() {
+      // Populate Category Dropdown
+      const sel = document.getElementById('skillCategorySelect');
+      if (sel && sel.options.length <= 1) {
+        internshipData.forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item.id;
+          opt.textContent = `${item.id}. ${item.category}`;
+          sel.appendChild(opt);
+        });
+      }
+
+      renderHardSkillsChart('ALL');
+      renderSoftSkillsRadar('ALL');
+      renderToolsCloud();
+      renderHeatmapMatrix();
+    }
+
+    function updateSkillCharts() {
+      const selVal = document.getElementById('skillCategorySelect').value;
+      renderHardSkillsChart(selVal);
+      renderSoftSkillsRadar(selVal);
+    }
+
+    function renderHardSkillsChart(selectedId) {
+      const ctx = document.getElementById('chartHardSkills').getContext('2d');
+      let labels = [];
+      let data = [];
+
+      if (selectedId === 'ALL') {
+        document.getElementById('hardSkillTitle').textContent = '10 อันดับ Hard Skills ยอดนิยมของตลาดภาพรวม';
+        // Aggregate top skills across all categories
+        const skillFrequencies = {};
+        internshipData.forEach(item => {
+          item.hard_skills.forEach((skill, idx) => {
+            const weight = (item.positions / 100) * (5 - idx > 0 ? 5 - idx : 1);
+            skillFrequencies[skill] = (skillFrequencies[skill] || 0) + weight;
+          });
+        });
+
+        const sortedSkills = Object.entries(skillFrequencies)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 10);
+
+        labels = sortedSkills.map(s => s[0]);
+        // Normalize to percentage scale
+        const maxVal = sortedSkills[0][1];
+        data = sortedSkills.map(s => Math.round((s[1] / maxVal) * 95));
+      } else {
+        const item = internshipData.find(d => d.id == selectedId);
+        if (item) {
+          document.getElementById('hardSkillTitle').textContent = `ทักษะเฉพาะทางของสายงาน: ${item.category}`;
+          labels = item.hard_skills;
+          data = labels.map((_, i) => 95 - (i * 12));
+        }
+      }
+
+      if (chartHardSkillsInstance) {
+        chartHardSkillsInstance.data.labels = labels;
+        chartHardSkillsInstance.data.datasets[0].data = data;
+        chartHardSkillsInstance.update();
+      } else {
+        chartHardSkillsInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'ระดับความต้องการ (%)',
+              data: data,
+              backgroundColor: 'rgba(99, 102, 241, 0.85)',
+              borderColor: '#6366f1',
+              borderWidth: 1,
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` ความต้องการ: ${ctx.raw}% ของประกาศรับสมัคร`
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: { color: '#94a3b8', callback: (v) => v + '%' }
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: '#cbd5e1', font: { size: 10 } }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    function renderSoftSkillsRadar(selectedId) {
+      const ctx = document.getElementById('chartSoftSkillsRadar').getContext('2d');
+      const radarLabels = [
+        'Problem Solving',
+        'Team Collaboration',
+        'Effective Communication',
+        'Agility & Adaptability',
+        'Critical Thinking',
+        'Time Management'
+      ];
+
+      let radarData = [92, 88, 85, 90, 84, 80];
+
+      if (selectedId !== 'ALL') {
+        const item = internshipData.find(d => d.id == selectedId);
+        if (item) {
+          // Dynamic weights based on cluster
+          if (item.cluster === 'Technology') {
+            radarData = [96, 85, 78, 88, 94, 82];
+          } else if (item.cluster === 'Creative') {
+            radarData = [86, 82, 88, 95, 85, 80];
+          } else if (item.cluster === 'Business') {
+            radarData = [88, 90, 96, 92, 84, 86];
+          } else {
+            radarData = [84, 92, 86, 85, 80, 90];
+          }
+        }
+      }
+
+      if (chartSoftSkillsRadarInstance) {
+        chartSoftSkillsRadarInstance.data.datasets[0].data = radarData;
+        chartSoftSkillsRadarInstance.update();
+      } else {
+        chartSoftSkillsRadarInstance = new Chart(ctx, {
+          type: 'radar',
+          data: {
+            labels: radarLabels,
+            datasets: [{
+              label: 'ระดับความสำคัญ (1-100)',
+              data: radarData,
+              backgroundColor: 'rgba(236, 72, 153, 0.25)',
+              borderColor: '#ec4899',
+              pointBackgroundColor: '#ec4899',
+              pointBorderColor: '#fff',
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              r: {
+                angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                pointLabels: { color: '#e2e8f0', font: { size: 10 } },
+                ticks: { display: false, min: 50, max: 100 }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    function renderToolsCloud() {
+      const container = document.getElementById('toolsCloudContainer');
+      container.innerHTML = '';
+
+      const toolWeights = [
+        { name: 'Git & GitHub', cluster: 'tech', size: 'text-base font-bold', freq: '94%' },
+        { name: 'Python', cluster: 'tech', size: 'text-xl font-extrabold', freq: '88%' },
+        { name: 'VS Code', cluster: 'tech', size: 'text-sm font-semibold', freq: '85%' },
+        { name: 'Docker', cluster: 'tech', size: 'text-sm font-medium', freq: '62%' },
+        { name: 'Figma', cluster: 'creative', size: 'text-xl font-extrabold', freq: '90%' },
+        { name: 'Postman', cluster: 'tech', size: 'text-xs font-medium', freq: '58%' },
+        { name: 'Power BI', cluster: 'business', size: 'text-base font-bold', freq: '75%' },
+        { name: 'Tableau', cluster: 'business', size: 'text-xs font-normal', freq: '48%' },
+        { name: 'Canva Pro', cluster: 'creative', size: 'text-sm font-semibold', freq: '72%' },
+        { name: 'Meta Ads Manager', cluster: 'business', size: 'text-sm font-bold', freq: '68%' },
+        { name: 'Google Analytics 4', cluster: 'business', size: 'text-base font-bold', freq: '79%' },
+        { name: 'Adobe Premiere / CapCut', cluster: 'creative', size: 'text-sm font-semibold', freq: '65%' },
+        { name: 'Jira / Confluence', cluster: 'tech', size: 'text-sm font-medium', freq: '55%' },
+        { name: 'Notion', cluster: 'business', size: 'text-xs font-normal', freq: '52%' },
+        { name: 'SQL / PostgreSQL', cluster: 'tech', size: 'text-lg font-bold', freq: '84%' },
+        { name: 'Adobe Photoshop / Illustrator', cluster: 'creative', size: 'text-base font-semibold', freq: '74%' },
+        { name: 'AWS Cloud Console', cluster: 'tech', size: 'text-xs font-medium', freq: '50%' },
+        { name: 'MS Excel (VBA/PowerQuery)', cluster: 'business', size: 'text-lg font-bold', freq: '86%' },
+        { name: 'Hugging Face / LLMs', cluster: 'tech', size: 'text-xs font-semibold', freq: '45%' },
+        { name: 'TikTok Ads Partner', cluster: 'business', size: 'text-xs font-normal', freq: '42%' }
+      ];
+
+      toolWeights.forEach(t => {
+        let badgeColor = 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20 hover:bg-indigo-500/20';
+        if (t.cluster === 'creative') badgeColor = 'bg-purple-500/10 text-purple-300 border-purple-500/20 hover:bg-purple-500/20';
+        if (t.cluster === 'business') badgeColor = 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20 hover:bg-emerald-500/20';
+
+        const span = document.createElement('span');
+        span.className = `cursor-pointer px-3 py-1.5 rounded-xl border transition-all duration-200 transform hover:scale-105 ${t.size} ${badgeColor} inline-flex items-center gap-1.5 shadow-sm`;
+        span.innerHTML = `<span>${t.name}</span><span class="text-[10px] opacity-60">(${t.freq})</span>`;
+        span.title = `เครื่องมือ: ${t.name} (พบในประกาศฝึกงาน ${t.freq})`;
+        span.onclick = () => {
+          showToast(`กรองข้อมูลที่ใช้เครื่องมือ: ${t.name}`, 'info');
+          document.getElementById('tableSearchInput').value = t.name.split(' ')[0];
+          switchTab(1);
+          renderTable();
+        };
+        container.appendChild(span);
+      });
+    }
+
+    function renderHeatmapMatrix() {
+      const tbody = document.getElementById('heatmapBody');
+      tbody.innerHTML = '';
+
+      const skillKeys = [
+        'js_ts', 'python_ai', 'sql_db', 'git', 'figma', 'ads_seo', 'bi_data', 'cloud_devops', 'excel', 'media'
+      ];
+
+      // Skill affinity matrix for 20 categories
+      internshipData.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-slate-800/40 hover:bg-slate-800/30 transition';
+
+        // Calculate relevance values 0-100
+        const isTech = item.cluster === 'Technology';
+        const isCreative = item.cluster === 'Creative';
+        const isBusiness = item.cluster === 'Business';
+
+        const scores = {
+          js_ts: isTech ? (item.category.includes('Software') || item.category.includes('QA') ? 95 : 40) : (item.category.includes('Design') ? 25 : 5),
+          python_ai: isTech ? 90 : (item.category.includes('Finance') ? 45 : 10),
+          sql_db: isTech ? 88 : (isBusiness ? 65 : 15),
+          git: isTech ? 95 : (item.category.includes('UI/UX') ? 50 : 10),
+          figma: isCreative ? 95 : (item.category.includes('Product') ? 80 : (isTech ? 30 : 10)),
+          ads_seo: item.category.includes('Marketing') || item.category.includes('E-Commerce') ? 95 : 10,
+          bi_data: item.category.includes('Data') || item.category.includes('Finance') || item.category.includes('Logistics') ? 90 : 35,
+          cloud_devops: item.category.includes('DevOps') || item.category.includes('Software') || item.category.includes('Security') ? 95 : 10,
+          excel: isBusiness || item.cluster === 'Operations' ? 95 : (isTech ? 50 : 40),
+          media: isCreative || item.category.includes('Content') ? 95 : (item.category.includes('Marketing') ? 60 : 5)
+        };
+
+        let rowHtml = `<td class="py-2.5 px-3 font-semibold text-white sticky left-0 bg-slate-900/90 z-10">${item.category}</td>`;
+
+        skillKeys.forEach(k => {
+          const score = scores[k];
+          let colorStyle = 'background: rgba(30, 41, 59, 0.4); color: #64748b;';
+          if (score > 80) colorStyle = 'background: rgba(79, 70, 229, 0.9); color: #ffffff; font-weight: bold;';
+          else if (score > 55) colorStyle = 'background: rgba(99, 102, 241, 0.55); color: #e0e7ff;';
+          else if (score > 25) colorStyle = 'background: rgba(99, 102, 241, 0.2); color: #a5b4fc;';
+
+          rowHtml += `
+            <td class="py-2 px-1 text-center">
+              <div class="heat-cell rounded py-1 px-1.5 text-[11px] mx-auto max-w-[48px]" style="${colorStyle}" title="${item.category} × ${score}% requirement">
+                ${score}%
+              </div>
+            </td>
+          `;
+        });
+
+        tr.innerHTML = rowHtml;
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* ==============================================================
+       7. TAB 3 VISUALS (DEMAND & SKILL ANALYSIS)
+       ============================================================== */
+    function initTab3Visuals() {
+      // 1. Chart: Demand vs. Compensation Matrix (Scatter / Bubble Plot)
+      const ctxScatter = document.getElementById('chartScatterMatrix').getContext('2d');
+      const clusterColors = {
+        Technology: 'rgba(99, 102, 241, 0.75)',
+        Creative: 'rgba(168, 85, 247, 0.75)',
+        Business: 'rgba(16, 185, 129, 0.75)',
+        Operations: 'rgba(245, 158, 11, 0.75)'
+      };
+
+      const scatterDatasets = ['Technology', 'Creative', 'Business', 'Operations'].map(clusterName => {
+        const clusterItems = internshipData.filter(d => d.cluster === clusterName);
+        return {
+          label: clusterName,
+          data: clusterItems.map(d => ({
+            x: d.positions,
+            y: d.stipend_daily_avg,
+            r: Math.max(6, Math.round(d.skill_intensity * 2.2)),
+            category: d.category,
+            cluster: d.cluster,
+            skills: d.skill_intensity,
+            min: d.stipend_daily_min,
+            max: d.stipend_daily_max
+          })),
+          backgroundColor: clusterColors[clusterName],
+          borderColor: clusterColors[clusterName].replace('0.75', '1'),
+          borderWidth: 1.5,
+          hoverBorderWidth: 3
+        };
+      });
+
+      chartScatterMatrixInstance = new Chart(ctxScatter, {
+        type: 'bubble',
+        data: { datasets: scatterDatasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { color: '#94a3b8', font: { size: 11 } }
+            },
+            tooltip: {
+              callbacks: {
+                title: (items) => items[0].raw.category,
+                label: (ctx) => {
+                  const r = ctx.raw;
+                  return [
+                    ` กลุ่มงาน: ${r.cluster}`,
+                    ` ปริมาณเปิดรับ: ${r.x.toLocaleString()} ตำแหน่ง`,
+                    ` เบี้ยเลี้ยงเฉลี่ย: ${r.y} บาท/วัน (ช่วง: ${r.min}-${r.max} บาท)`,
+                    ` ความเข้มข้นทักษะ: ${r.skills} / 10.0`
+                  ];
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Demand Volume (จำนวนตำแหน่งงานเปิดรับ)',
+                color: '#94a3b8',
+                font: { size: 11, weight: 'bold' }
+              },
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#cbd5e1' }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Average Daily Allowance (เบี้ยเลี้ยงเฉลี่ย บาท/วัน)',
+                color: '#94a3b8',
+                font: { size: 11, weight: 'bold' }
+              },
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#cbd5e1' }
+            }
+          }
+        }
+      });
+
+      // 2. Chart: Skill Intensity Index Bar Chart
+      const sortedIntensity = [...internshipData].sort((a, b) => b.skill_intensity - a.skill_intensity);
+      const ctxIntensity = document.getElementById('chartSkillIntensity').getContext('2d');
+      chartSkillIntensityInstance = new Chart(ctxIntensity, {
+        type: 'bar',
+        data: {
+          labels: sortedIntensity.map(d => d.category),
+          datasets: [{
+            label: 'ดัชนีความเข้มข้นของทักษะ (Skill Intensity Index)',
+            data: sortedIntensity.map(d => d.skill_intensity),
+            backgroundColor: sortedIntensity.map(d => {
+              if (d.skill_intensity >= 8.5) return '#ec4899';
+              if (d.skill_intensity >= 7.5) return '#8b5cf6';
+              return 'rgba(139, 92, 246, 0.5)';
+            }),
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ดัชนีความเข้มข้น: ${ctx.raw} / 10.0 (ต้องการทักษะเชิงลึก)`
+              }
+            }
+          },
+          scales: {
+            x: {
+              min: 4,
+              max: 10,
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8' }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: '#cbd5e1', font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    function updateTab3Charts() {
+      if (chartScatterMatrixInstance) {
+        ['Technology', 'Creative', 'Business', 'Operations'].forEach((clusterName, idx) => {
+          const clusterItems = internshipData.filter(d => d.cluster === clusterName);
+          chartScatterMatrixInstance.data.datasets[idx].data = clusterItems.map(d => ({
+            x: d.positions,
+            y: d.stipend_daily_avg,
+            r: Math.max(6, Math.round(d.skill_intensity * 2.2)),
+            category: d.category,
+            cluster: d.cluster,
+            skills: d.skill_intensity,
+            min: d.stipend_daily_min,
+            max: d.stipend_daily_max
+          }));
+        });
+        chartScatterMatrixInstance.update();
+      }
+
+      if (chartSkillIntensityInstance) {
+        const sortedIntensity = [...internshipData].sort((a, b) => b.skill_intensity - a.skill_intensity);
+        chartSkillIntensityInstance.data.labels = sortedIntensity.map(d => d.category);
+        chartSkillIntensityInstance.data.datasets[0].data = sortedIntensity.map(d => d.skill_intensity);
+        chartSkillIntensityInstance.update();
+      }
+    }
+
+    /* ==============================================================
+       8. EXPORT ENGINE: CSV & JSON
+       ============================================================== */
+    function exportToCSV() {
+      const headers = [
+        "id", "category", "cluster", "companies_count", "positions", "percentage",
+        "stipend_daily_min", "stipend_daily_max", "stipend_daily_avg",
+        "stipend_monthly", "work_format_onsite", "work_format_hybrid", "work_format_remote",
+        "locations", "hard_skills", "soft_skills", "skill_intensity"
+      ];
+
+      const rows = internshipData.map(d => [
+        d.id,
+        `"${d.category}"`,
+        `"${d.cluster}"`,
+        d.companies_count,
+        d.positions,
+        d.percentage,
+        d.stipend_daily_min,
+        d.stipend_daily_max,
+        d.stipend_daily_avg,
+        `"${d.stipend_monthly}"`,
+        d.work_format.onsite,
+        d.work_format.hybrid,
+        d.work_format.remote,
+        `"${d.locations.join('; ')}"`,
+        `"${d.hard_skills.join('; ')}"`,
+        `"${d.soft_skills.join('; ')}"`,
+        d.skill_intensity
+      ]);
+
+      const csvContent = "\uFEFF" + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `thailand_internship_dataset_2026_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('ดาวน์โหลดไฟล์ CSV เรียบร้อยแล้ว', 'success');
+    }
+
+    function exportToJSON() {
+      const jsonContent = JSON.stringify(internshipData, null, 2);
+      const blob = new Blob([jsonContent], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `thailand_internship_dataset_2026_${new Date().toISOString().slice(0, 10)}.json`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('ดาวน์โหลดไฟล์ JSON เรียบร้อยแล้ว', 'success');
+    }
+
+    function resetData() {
+      internshipData = JSON.parse(JSON.stringify(INITIAL_INTERNSHIP_DATA));
+      tableCurrentPage = 1;
+      tableSortColumn = 'positions';
+      tableSortDirection = 'desc';
+      document.getElementById('tableSearchInput').value = '';
+      document.getElementById('filterCluster').value = 'ALL';
+      document.getElementById('filterFormat').value = 'ALL';
+
+      recalculateMetrics();
+      renderTable();
+      if (currentTab === 2) updateSkillCharts();
+      if (currentTab === 3) updateTab3Charts();
+
+      showToast('รีเซ็ตข้อมูลทั้งหมดกลับสู่ค่าเริ่มต้นแล้ว', 'info');
+    }
+
+    /* ==============================================================
+       9. TOAST NOTIFICATIONS & THEME TOGGLE
+       ============================================================== */
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+
+      let icon = 'fa-info-circle';
+      let borderCol = 'border-indigo-500/40 bg-slate-900/95 text-indigo-300';
+      if (type === 'success') {
+        icon = 'fa-circle-check';
+        borderCol = 'border-emerald-500/40 bg-slate-900/95 text-emerald-300';
+      } else if (type === 'warning') {
+        icon = 'fa-triangle-exclamation';
+        borderCol = 'border-amber-500/40 bg-slate-900/95 text-amber-300';
+      }
+
+      toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl border shadow-xl text-xs font-medium backdrop-blur-md transition-all duration-300 transform translate-y-2 opacity-0 ${borderCol}`;
+      toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
+
+      container.appendChild(toast);
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.classList.contains('dark');
+      const themeBtn = document.getElementById('themeToggle');
+
+      if (isDark) {
+        html.classList.remove('dark');
+        html.classList.add('light');
+        document.body.classList.remove('bg-slate-950', 'text-slate-100');
+        document.body.classList.add('bg-slate-100', 'text-slate-900');
+        themeBtn.innerHTML = '<i class="fa-solid fa-moon text-sm"></i>';
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.remove('light');
+        html.classList.add('dark');
+        document.body.classList.remove('bg-slate-100', 'text-slate-900');
+        document.body.classList.add('bg-slate-950', 'text-slate-100');
+        themeBtn.innerHTML = '<i class="fa-solid fa-sun text-sm"></i>';
+        localStorage.setItem('theme', 'dark');
+      }
+
+      // Re-render chart text colors if necessary
+      Chart.defaults.color = isDark ? '#475569' : '#94a3b8';
+      [chartPositionsRankInstance, chartWorkFormatInstance, chartRegionsInstance, chartStipendRangeInstance, chartHardSkillsInstance, chartSoftSkillsRadarInstance, chartScatterMatrixInstance, chartSkillIntensityInstance].forEach(chart => {
+        if (chart) chart.update();
+      });
+    }
+
+    /* ==============================================================
+       10. BOOTSTRAP APPLICATION ON DOM CONTENT LOADED
+       ============================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      // Setup event listeners
+      document.getElementById('tableSearchInput')?.addEventListener('input', () => {
+        tableCurrentPage = 1;
+        renderTable();
+      });
+
+      document.getElementById('filterCluster')?.addEventListener('change', () => {
+        tableCurrentPage = 1;
+        renderTable();
+      });
+
+      document.getElementById('filterFormat')?.addEventListener('change', () => {
+        tableCurrentPage = 1;
+        renderTable();
+      });
+
+      document.getElementById('btnResetData')?.addEventListener('click', resetData);
+      document.getElementById('btnExportCSV')?.addEventListener('click', exportToCSV);
+      document.getElementById('btnExportJSON')?.addEventListener('click', exportToJSON);
+      document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+
+      // Restore saved theme if any
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light') {
+        toggleTheme();
+      }
+
+      // Initial chart styling defaults
+      Chart.defaults.font.family = "'Prompt', 'Inter', sans-serif";
+      Chart.defaults.color = '#94a3b8';
+
+      // Initialize Tab 1 components
+      recalculateMetrics();
+      initTab1Charts();
+      renderTable();
+    });
+  </script>
+</body>
+</html>
