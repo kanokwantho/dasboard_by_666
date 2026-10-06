@@ -100,6 +100,23 @@
       z-index: 10;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
+    @media print {
+      header, footer, #toastContainer, .no-print {
+        display: none !important;
+      }
+      .tab-content {
+        display: block !important;
+      }
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .glass-card {
+        background: white !important;
+        border: 1px solid #ccc !important;
+        break-inside: avoid;
+      }
+    }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen transition-colors duration-300">
@@ -132,22 +149,33 @@
         </div>
 
         <!-- Right Quick Controls -->
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Add Entry Button -->
+          <button onclick="openAddEntryModal()" class="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition flex items-center gap-1.5 shadow-md shadow-indigo-600/30">
+            <i class="fa-solid fa-plus"></i>
+            <span class="hidden sm:inline">เพิ่มสายงาน</span>
+          </button>
+
           <!-- Reset Data Button -->
           <button id="btnResetData" title="รีเซ็ตข้อมูลเป็นค่าเริ่มต้น" class="p-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition flex items-center gap-2 text-xs font-medium">
             <i class="fa-solid fa-arrow-rotate-left"></i>
-            <span class="hidden md:inline">Reset Data</span>
+            <span class="hidden md:inline">Reset</span>
           </button>
 
-          <!-- Export Dropdown / Buttons -->
+          <!-- Export Buttons -->
           <button id="btnExportCSV" class="px-3 py-2 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-medium transition flex items-center gap-1.5">
             <i class="fa-solid fa-file-csv"></i>
-            <span class="hidden sm:inline">Export CSV</span>
+            <span class="hidden sm:inline">CSV</span>
           </button>
 
           <button id="btnExportJSON" class="px-3 py-2 rounded-lg bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 text-xs font-medium transition flex items-center gap-1.5">
             <i class="fa-solid fa-file-code"></i>
-            <span class="hidden sm:inline">Export JSON</span>
+            <span class="hidden sm:inline">JSON</span>
+          </button>
+
+          <!-- Print / PDF -->
+          <button onclick="window.print()" title="พิมพ์รายงาน หรือ บันทึกเป็น PDF" class="p-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition text-xs">
+            <i class="fa-solid fa-print"></i>
           </button>
 
           <!-- Dark/Light Mode Toggle -->
@@ -159,22 +187,22 @@
 
       <!-- Tab Switcher Navigation -->
       <div class="flex border-t border-slate-800/80 -mb-px space-x-1 sm:space-x-4 overflow-x-auto">
-        <button id="tabNav1" onclick="switchTab(1)" class="tab-btn flex items-center gap-2 py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold border-b-2 border-brand-500 text-brand-400 transition">
+        <button id="tabNav1" onclick="switchTab(1)" class="tab-btn flex items-center gap-2 py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold border-b-2 border-brand-500 text-brand-400 transition whitespace-nowrap">
           <i class="fa-solid fa-chart-pie"></i>
           <span>1. ข้อมูลภาพรวม & เบี้ยเลี้ยง (Demographics)</span>
           <span id="badgeTab1Count" class="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-brand-500/20 text-brand-300">20 สายงาน</span>
         </button>
 
-        <button id="tabNav2" onclick="switchTab(2)" class="tab-btn flex items-center gap-2 py-3 px-3 sm:px-4 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+        <button id="tabNav2" onclick="switchTab(2)" class="tab-btn flex items-center gap-2 py-3 px-3 sm:px-4 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition whitespace-nowrap">
           <i class="fa-solid fa-microchip"></i>
           <span>2. ทักษะ & ตลาดต้องการ (Skills & Tech)</span>
-          <span class="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-400">Heatmap & Radar</span>
+          <span class="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-400">Heatmap & Compare</span>
         </button>
 
-        <button id="tabNav3" onclick="switchTab(3)" class="tab-btn flex items-center gap-2 py-3 px-3 sm:px-4 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+        <button id="tabNav3" onclick="switchTab(3)" class="tab-btn flex items-center gap-2 py-3 px-3 sm:px-4 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition whitespace-nowrap">
           <i class="fa-solid fa-chart-line"></i>
-          <span>3. วิเคราะห์ความคุ้มค่า & ความเข้มข้น (Analysis)</span>
-          <span class="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-400">Demand Matrix</span>
+          <span>3. วิเคราะห์ความคุ้มค่า & คำนวณ ROI (Analysis)</span>
+          <span class="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-400">Matrix & ROI Calc</span>
         </button>
       </div>
     </div>
@@ -220,7 +248,7 @@
           <div class="mt-3">
             <div id="kpiTotalPositions" class="text-3xl font-extrabold text-white">4,180</div>
             <p class="text-xs text-slate-400 flex items-center gap-1 mt-1">
-              <span>เฉลี่ย 3.3 ตำแหน่ง ต่อ 1 บริษัท</span>
+              <span id="kpiPositionsPerCompany">เฉลี่ย 3.3 ตำแหน่ง ต่อ 1 บริษัท</span>
             </p>
           </div>
         </div>
@@ -239,14 +267,14 @@
               <span id="kpiAvgAllowance" class="text-3xl font-extrabold text-white">418</span>
               <span class="text-sm font-semibold text-emerald-400">THB / วัน</span>
             </div>
-            <p class="text-xs text-slate-400 flex items-center gap-1 mt-1">
+            <p id="kpiMonthlyEstimate" class="text-xs text-slate-400 flex items-center gap-1 mt-1">
               <span>เทียบเท่า 9,200 - 13,500 THB/เดือน</span>
             </p>
           </div>
         </div>
 
         <!-- KPI 4: Top Demanded Field -->
-        <div class="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition relative overflow-hidden group">
+        <div class="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition relative overflow-hidden group cursor-pointer" onclick="filterToTopCategory()">
           <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition"></div>
           <div class="flex items-center justify-between">
             <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Top Demanded Field</span>
@@ -265,13 +293,13 @@
 
       <!-- Tab 1 Charts Row 1: Positions Rank & Work Format Donut -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Horizontal Bar Chart: Ranked 1-20 Categories -->
+        <!-- Horizontal Bar Chart: Ranked Categories -->
         <div class="lg:col-span-2 glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
           <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
             <div>
               <h2 class="text-base font-bold text-white flex items-center gap-2">
                 <i class="fa-solid fa-chart-simple text-indigo-400"></i>
-                <span>สัดส่วนจำนวนเปิดรับเด็กฝึกงานแยกตามสายงาน (Top 20 Categories)</span>
+                <span>สัดส่วนจำนวนเปิดรับเด็กฝึกงานแยกตามสายงาน (Ranked Categories)</span>
               </h2>
               <p class="text-xs text-slate-400">เรียงตามปริมาณตำแหน่งงานที่เปิดรับ (Live update เมื่อแก้ไขตารางด้านล่าง)</p>
             </div>
@@ -340,10 +368,14 @@
             <div>
               <h2 class="text-base font-bold text-white flex items-center gap-2">
                 <i class="fa-solid fa-money-bill-trend-up text-emerald-400"></i>
-                <span>ช่วงเบี้ยเลี้ยงรายวันต่ำสุด-สูงสุด-ค่าเฉลี่ย (THB/วัน)</span>
+                <span id="stipendChartTitle">ช่วงเบี้ยเลี้ยงรายวันต่ำสุด-สูงสุด-ค่าเฉลี่ย (THB/วัน)</span>
               </h2>
               <p class="text-xs text-slate-400">เปรียบเทียบอัตราผลตอบแทนแยกตามกลุ่มงานสำคัญ</p>
             </div>
+            <!-- View Mode Toggle Button -->
+            <button onclick="toggleStipendChartMode()" id="btnToggleStipendMode" class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-slate-700 transition">
+              <i class="fa-solid fa-calendar-days mr-1"></i> ดูรายเดือน
+            </button>
           </div>
           <div class="relative flex-1 min-h-[260px]">
             <canvas id="chartStipendRange"></canvas>
@@ -366,14 +398,14 @@
               </span>
             </div>
             <p class="text-xs text-slate-400 mt-1">
-              💡 คุณสามารถคลิกแก้ไขตัวเลขในคอลัมน์ <span class="text-indigo-400 font-semibold underline">จำนวนตำแหน่ง</span> หรือ <span class="text-emerald-400 font-semibold underline">เบี้ยเลี้ยง</span> ในตารางได้โดยตรง แล้วระบบจะคำนวณกราฟและ KPI ใหม่ทันที
+              💡 คุณสามารถคลิกแก้ไขตัวเลขในคอลัมน์ <span class="text-indigo-400 font-semibold underline">จำนวนตำแหน่ง</span> หรือ <span class="text-emerald-400 font-semibold underline">เบี้ยเลี้ยง</span> ในตารางได้โดยตรง หรือคลิกปุ่ม <span class="text-cyan-400 font-semibold">ดูข้อมูล</span> เพื่อดูบริษัทตัวอย่าง
             </p>
           </div>
 
-          <!-- Controls: Search, Format Filter, Reset -->
+          <!-- Controls: Search, Format Filter -->
           <div class="flex flex-wrap items-center gap-2">
             <!-- Search Input -->
-            <div class="relative min-w-[220px]">
+            <div class="relative min-w-[200px]">
               <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
               <input id="tableSearchInput" type="text" placeholder="ค้นหาสายงาน, ทักษะ, จังหวัด..." 
                      class="w-full pl-9 pr-3 py-2 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition">
@@ -396,6 +428,26 @@
               <option value="HIGH_ONSITE">เน้น On-site (&gt;45%)</option>
             </select>
           </div>
+        </div>
+
+        <!-- Pill Quick Filters for Clusters -->
+        <div class="flex flex-wrap items-center gap-2 pt-1 pb-1">
+          <span class="text-xs text-slate-500 mr-1">กลุ่มด่วน:</span>
+          <button onclick="setClusterFilter('ALL')" id="pillCluster_ALL" class="pill-filter px-3 py-1 rounded-full text-xs font-medium bg-brand-500 text-white border border-brand-500 transition">
+            ทั้งหมด (<span id="countCluster_ALL">20</span>)
+          </button>
+          <button onclick="setClusterFilter('Technology')" id="pillCluster_Technology" class="pill-filter px-3 py-1 rounded-full text-xs font-medium bg-slate-900 hover:bg-slate-800 text-indigo-300 border border-slate-700 transition">
+            💻 Tech (<span id="countCluster_Tech">6</span>)
+          </button>
+          <button onclick="setClusterFilter('Creative')" id="pillCluster_Creative" class="pill-filter px-3 py-1 rounded-full text-xs font-medium bg-slate-900 hover:bg-slate-800 text-purple-300 border border-slate-700 transition">
+            🎨 Creative (<span id="countCluster_Creative">3</span>)
+          </button>
+          <button onclick="setClusterFilter('Business')" id="pillCluster_Business" class="pill-filter px-3 py-1 rounded-full text-xs font-medium bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-slate-700 transition">
+            💼 Business (<span id="countCluster_Business">5</span>)
+          </button>
+          <button onclick="setClusterFilter('Operations')" id="pillCluster_Operations" class="pill-filter px-3 py-1 rounded-full text-xs font-medium bg-slate-900 hover:bg-slate-800 text-amber-300 border border-slate-700 transition">
+            ⚙️ Operations (<span id="countCluster_Ops">6</span>)
+          </button>
         </div>
 
         <!-- Table Container -->
@@ -427,8 +479,8 @@
                 <th class="py-3 px-3">
                   ทักษะสำคัญ (Hard Skills)
                 </th>
-                <th class="py-3 px-3">
-                  หัวเมืองหลัก
+                <th class="py-3 px-3 text-center">
+                  แอ็กชัน
                 </th>
               </tr>
             </thead>
@@ -520,27 +572,44 @@
         </div>
       </div>
 
-      <!-- Category Filter Control Banner for Tab 2 -->
-      <div class="glass-card rounded-2xl p-4 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <!-- Controls & Comparison Bar for Tab 2 -->
+      <div class="glass-card rounded-2xl p-4 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-sliders text-indigo-400"></i>
           <div>
-            <span class="text-sm font-bold text-white">ตัวกรองวิเคราะห์ทักษะเฉพาะสายงาน:</span>
-            <span class="text-xs text-slate-400 block sm:inline sm:ml-1">เลือกเพื่อเจาะลึกทักษะทางเทคนิคและเครื่องมือเฉพาะด้าน</span>
+            <span class="text-sm font-bold text-white">ตัวกรองและการเปรียบเทียบทักษะ:</span>
+            <span class="text-xs text-slate-400 block sm:inline sm:ml-1">เลือกเพื่อเจาะลึกทักษะเฉพาะด้าน หรือ เปรียบเทียบ 2 สายงาน</span>
           </div>
         </div>
-        <div class="flex items-center gap-2">
-          <label for="skillCategorySelect" class="text-xs text-slate-400 whitespace-nowrap">สายงานเป้าหมาย:</label>
-          <select id="skillCategorySelect" onchange="updateSkillCharts()" class="py-2 px-3 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
-            <option value="ALL">✨ รวมทุกสายงาน (All Categories Aggregated)</option>
-            <!-- Generated dynamically -->
-          </select>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Single Select -->
+          <div class="flex items-center gap-1.5">
+            <label for="skillCategorySelect" class="text-xs text-slate-400 whitespace-nowrap">สายงานหลัก:</label>
+            <select id="skillCategorySelect" onchange="updateSkillCharts()" class="py-2 px-3 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+              <option value="ALL">✨ รวมทุกสายงาน (All Combined)</option>
+            </select>
+          </div>
+
+          <!-- Comparison Checkbox -->
+          <label class="flex items-center gap-2 cursor-pointer text-xs text-indigo-300 bg-slate-900 px-3 py-2 rounded-lg border border-slate-700">
+            <input type="checkbox" id="chkCompareMode" onchange="toggleCompareMode()" class="rounded bg-slate-800 border-slate-600 text-brand-500">
+            <span>เปรียบเทียบ 2 สายงาน</span>
+          </label>
+
+          <!-- Compare Select (Hidden by default) -->
+          <div id="compareSelectContainer" class="hidden flex items-center gap-1.5">
+            <label for="skillCompareSelect" class="text-xs text-pink-400 whitespace-nowrap">เทียบกับ:</label>
+            <select id="skillCompareSelect" onchange="updateSkillCharts()" class="py-2 px-3 text-xs rounded-lg bg-slate-900 border border-pink-500/40 text-pink-300 focus:outline-none">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
         </div>
       </div>
 
       <!-- Tab 2 Visuals: Hard Skills Bar Chart + Soft Skills Radar Chart -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- 10 อันดับ Hard Skills Bar Chart (7 Cols) -->
+        <!-- Hard Skills Bar Chart (7 Cols) -->
         <div class="lg:col-span-7 glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
           <div class="flex items-center justify-between mb-4">
             <div>
@@ -584,7 +653,7 @@
               <i class="fa-solid fa-cubes-stacked text-amber-400"></i>
               <span>เครื่องมือ, ภาษาโปรแกรม และ Software Platforms ยอดนิยม</span>
             </h2>
-            <p class="text-xs text-slate-400">ขนาดและความเข้มของ Tag สะท้อนความถี่ที่ตลาดแรงงานฝึกงานระบุ</p>
+            <p class="text-xs text-slate-400">คลิกที่เครื่องมือเพื่อค้นหาสายงานที่ต้องการเครื่องมือนั้นในตารางทันที</p>
           </div>
           <div class="flex items-center gap-3 text-xs text-slate-400">
             <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-indigo-500/80 inline-block"></span> เทคโนโลยีสูง</span>
@@ -629,7 +698,7 @@
                 <th class="py-3 px-2 text-center">Data Analytics / BI</th>
                 <th class="py-3 px-2 text-center">Cloud / DevOps</th>
                 <th class="py-3 px-2 text-center">MS Excel / Sheets</th>
-                <th class="py-3 px-2 text-center">Video / Media Editing</th>
+                <th class="py-3 px-2 text-center">Video / Media</th>
               </tr>
             </thead>
             <tbody id="heatmapBody" class="divide-y divide-slate-800/60 font-sans">
@@ -659,7 +728,7 @@
           <div class="mt-3">
             <div class="text-xl font-extrabold text-white truncate">AI & Machine Learning</div>
             <p class="text-xs text-rose-300 flex items-center gap-1 mt-1">
-              <span>High Demand × 9.2 Skills Requirement</span>
+              <span>High Demand × 9.3 Skills Requirement</span>
             </p>
           </div>
         </div>
@@ -675,7 +744,7 @@
           <div class="mt-3">
             <div class="text-xl font-extrabold text-white truncate">Cloud & DevOps / AI</div>
             <p class="text-xs text-emerald-300 flex items-center gap-1 mt-1">
-              <span>520 - 540 THB/วัน (สูงสุด 700 THB)</span>
+              <span>525 - 550 THB/วัน (สูงสุด 700 THB)</span>
             </p>
           </div>
         </div>
@@ -705,7 +774,7 @@
             </div>
           </div>
           <div class="mt-3">
-            <div class="text-xl font-extrabold text-white truncate">Software Eng & Marketing</div>
+            <div class="text-xl font-extrabold text-white truncate">Software Eng & DevOps</div>
             <p class="text-xs text-cyan-300 flex items-center gap-1 mt-1">
               <span>โอกาสทำงานแบบ Hybrid/Remote &gt; 85%</span>
             </p>
@@ -809,8 +878,8 @@
                   </div>
                 </div>
                 <div class="text-right">
-                  <span class="text-xs font-bold text-indigo-300 block">1,780 ตำแหน่ง</span>
-                  <span class="text-[10px] text-slate-400">42.6% สัดส่วน</span>
+                  <span id="clusterTechPositions" class="text-xs font-bold text-indigo-300 block">1,830 ตำแหน่ง</span>
+                  <span id="clusterTechShare" class="text-[10px] text-slate-400">43.8% สัดส่วน</span>
                 </div>
               </div>
 
@@ -826,8 +895,8 @@
                   </div>
                 </div>
                 <div class="text-right">
-                  <span class="text-xs font-bold text-purple-300 block">750 ตำแหน่ง</span>
-                  <span class="text-[10px] text-slate-400">17.9% สัดส่วน</span>
+                  <span id="clusterCreativePositions" class="text-xs font-bold text-purple-300 block">750 ตำแหน่ง</span>
+                  <span id="clusterCreativeShare" class="text-[10px] text-slate-400">17.9% สัดส่วน</span>
                 </div>
               </div>
 
@@ -843,8 +912,8 @@
                   </div>
                 </div>
                 <div class="text-right">
-                  <span class="text-xs font-bold text-emerald-300 block">1,130 ตำแหน่ง</span>
-                  <span class="text-[10px] text-slate-400">27.0% สัดส่วน</span>
+                  <span id="clusterBizPositions" class="text-xs font-bold text-emerald-300 block">1,070 ตำแหน่ง</span>
+                  <span id="clusterBizShare" class="text-[10px] text-slate-400">25.6% สัดส่วน</span>
                 </div>
               </div>
 
@@ -860,21 +929,266 @@
                   </div>
                 </div>
                 <div class="text-right">
-                  <span class="text-xs font-bold text-amber-300 block">520 ตำแหน่ง</span>
-                  <span class="text-[10px] text-slate-400">12.4% สัดส่วน</span>
+                  <span id="clusterOpsPositions" class="text-xs font-bold text-amber-300 block">530 ตำแหน่ง</span>
+                  <span id="clusterOpsShare" class="text-[10px] text-slate-400">12.7% สัดส่วน</span>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-slate-400">
-            💡 ข้อมูลอัปเดตสอดคล้องกับโครงสร้างตลาดแรงงานและการปรับตัวสู่ Digital Transformation
+            💡 ข้อมูลสรุปเชิงโครงสร้างจัดกลุ่มตามบทบาทหลักและมาตรฐานอุตสาหกรรม
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3 Interactive Feature: Internship ROI & Skill Match Calculator -->
+      <div class="glass-card rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <i class="fa-solid fa-calculator"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-white">เครื่องมือประเมินความพร้อมและคำนวณความคุ้มค่า (Internship ROI & Skill Match Calculator)</h2>
+            <p class="text-xs text-slate-400">สำหรับนิสิต/นักศึกษา: ทดสอบประเมินโอกาสและเทียบระดับผลตอบแทนกับความพร้อมทางทักษะของคุณ</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+          <!-- Input 1: Target Category -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">1. เลือกสายงานเป้าหมาย:</label>
+            <select id="calcCategorySelect" onchange="runRoiCalculation()" class="w-full py-2 px-3 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+
+          <!-- Input 2: Expected Allowance -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">2. เบี้ยเลี้ยงที่คาดหวัง (บาท/วัน):</label>
+            <div class="flex items-center gap-2">
+              <input type="number" id="calcStipendInput" value="450" min="200" max="1500" step="50" oninput="runRoiCalculation()" class="w-full py-2 px-3 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+              <span class="text-xs text-slate-400 whitespace-nowrap">THB / วัน</span>
+            </div>
+          </div>
+
+          <!-- Input 3: Skills Checked -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">3. ทักษะที่มีแล้วในปัจจุบัน:</label>
+            <div id="calcSkillsCheckboxes" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-2 rounded-lg bg-slate-900 border border-slate-800">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Calculator Result Box -->
+        <div id="calcResultBox" class="mt-4 p-4 rounded-xl bg-slate-900/90 border border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+          <div class="p-2">
+            <span class="text-[11px] text-slate-400 block">Skill Readiness Match</span>
+            <span id="calcResultMatch" class="text-2xl font-extrabold text-indigo-400">80%</span>
+            <p id="calcResultMatchDesc" class="text-[10px] text-slate-400">พร้อมสำหรับงานส่วนใหญ่</p>
+          </div>
+          <div class="p-2 border-y sm:border-y-0 sm:border-x border-slate-800">
+            <span class="text-[11px] text-slate-400 block">เทียบกับค่าเฉลี่ยตลาด</span>
+            <span id="calcResultStipendDiff" class="text-2xl font-extrabold text-emerald-400">+7.6%</span>
+            <p id="calcResultStipendDesc" class="text-[10px] text-slate-400">สูงกว่าค่าเฉลี่ยสายงานเล็กน้อย</p>
+          </div>
+          <div class="p-2">
+            <span class="text-[11px] text-slate-400 block">Strategic Quadrant</span>
+            <span id="calcResultQuadrant" class="text-sm font-bold text-amber-400 block mt-1">⭐ Q1: High Demand • High Pay</span>
+            <p id="calcResultAction" class="text-[10px] text-slate-400 mt-1">แนะนำ: พัฒนา Portfolio เพิ่มเติม</p>
           </div>
         </div>
       </div>
     </section>
 
   </main>
+
+  <!-- ============================================================== -->
+  <!-- MODAL 1: VIEW DETAILS & REPRESENTATIVE COMPANIES (RAW DATA)    -->
+  <!-- ============================================================== -->
+  <div id="detailModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="glass-card rounded-2xl border border-slate-700 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
+      <!-- Close button -->
+      <button onclick="closeDetailModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div id="modalClusterIcon" class="w-12 h-12 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl font-bold">
+          <i class="fa-solid fa-briefcase"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 id="modalCategoryTitle" class="text-lg font-bold text-white">Software Engineering</h3>
+            <span id="modalClusterBadge" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Technology</span>
+          </div>
+          <p id="modalCategorySubtitle" class="text-xs text-slate-400">สถิติและข้อมูลเชิงลึกการเปิดรับเด็กฝึกงาน</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4 text-center">
+        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+          <span class="text-[10px] text-slate-400 block">เปิดรับทั้งหมด</span>
+          <span id="modalPositions" class="text-base font-extrabold text-indigo-300">600 ตำแหน่ง</span>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+          <span class="text-[10px] text-slate-400 block">บริษัทที่เปิดรับ</span>
+          <span id="modalCompanies" class="text-base font-extrabold text-white">185 แห่ง</span>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+          <span class="text-[10px] text-slate-400 block">เบี้ยเลี้ยงเฉลี่ย</span>
+          <span id="modalStipendAvg" class="text-base font-extrabold text-emerald-400">475 บาท/วัน</span>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+          <span class="text-[10px] text-slate-400 block">ประมาณการรายเดือน</span>
+          <span id="modalStipendMonthly" class="text-xs font-bold text-slate-300 block mt-1">8,000-15,000</span>
+        </div>
+      </div>
+
+      <!-- Sample Representative Companies -->
+      <div class="mt-4">
+        <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5 mb-2">
+          <i class="fa-solid fa-building-circle-check text-cyan-400"></i>
+          <span>ตัวอย่างบริษัทชั้นนำที่เปิดรับเด็กฝึกงานในสายงานนี้ (Sample Employers):</span>
+        </h4>
+        <div id="modalEmployersList" class="flex flex-wrap gap-1.5">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- Required Hard Skills -->
+      <div class="mt-4">
+        <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5 mb-2">
+          <i class="fa-solid fa-code text-indigo-400"></i>
+          <span>ทักษะทางเทคนิค (Hard Skills Required):</span>
+        </h4>
+        <div id="modalHardSkillsList" class="flex flex-wrap gap-1.5">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- Soft Skills & Tools -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+        <div>
+          <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5 mb-2">
+            <i class="fa-solid fa-lightbulb text-pink-400"></i>
+            <span>Soft Skills:</span>
+          </h4>
+          <div id="modalSoftSkillsList" class="flex flex-wrap gap-1.5"></div>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5 mb-2">
+            <i class="fa-solid fa-wrench text-amber-400"></i>
+            <span>Tools & Software:</span>
+          </h4>
+          <div id="modalToolsList" class="flex flex-wrap gap-1.5"></div>
+        </div>
+      </div>
+
+      <!-- Work Locations & Format -->
+      <div class="mt-4 p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-xs flex flex-col sm:flex-row justify-between gap-2">
+        <div>
+          <span class="text-slate-400">จังหวัด/ศูนย์กลาง: </span>
+          <span id="modalLocations" class="text-white font-medium">กรุงเทพฯ, เชียงใหม่</span>
+        </div>
+        <div>
+          <span class="text-slate-400">สัดส่วนทำงาน: </span>
+          <span id="modalWorkFormat" class="text-white font-medium">Onsite 15% | Hybrid 60% | Remote 25%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL 2: ADD NEW CATEGORY / POSITION ENTRY                     -->
+  <!-- ============================================================== -->
+  <div id="addEntryModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="glass-card rounded-2xl border border-slate-700 max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
+      <!-- Close button -->
+      <button onclick="closeAddEntryModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
+
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold">
+          <i class="fa-solid fa-plus"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-white">เพิ่มข้อมูลสายงานฝึกงานใหม่</h3>
+          <p class="text-xs text-slate-400">กรอกข้อมูลเพื่อผนวกเข้ากับสถิติและคำนวณกราฟแบบ Real-time</p>
+        </div>
+      </div>
+
+      <form id="addEntryForm" onsubmit="handleAddEntrySubmit(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">ชื่อสายงาน (Job Category Name) *</label>
+          <input type="text" id="newCategoryName" required placeholder="เช่น Mobile Application Developer" class="w-full py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">กลุ่มสายงาน (Cluster) *</label>
+            <select id="newCategoryCluster" required class="w-full py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+              <option value="Technology">Technology & Software</option>
+              <option value="Creative">Creative & Media</option>
+              <option value="Business">Business & Marketing</option>
+              <option value="Operations">Operations & Engineering</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">จำนวนบริษัทเปิดรับ *</label>
+            <input type="number" id="newCategoryCompanies" required min="1" value="25" class="w-full py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">จำนวนตำแหน่ง *</label>
+            <input type="number" id="newCategoryPositions" required min="1" value="75" class="w-full py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">เบี้ยเลี้ยงเฉลี่ย (บาท/วัน) *</label>
+            <input type="number" id="newCategoryAvgStipend" required min="100" value="450" class="w-full py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">เบี้ยเลี้ยงสูงสุด (บาท/วัน)</label>
+            <input type="number" id="newCategoryMaxStipend" required min="100" value="600" class="w-full py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">รูปแบบการทำงาน (รวม 100%)</label>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <span class="text-[10px] text-amber-400">On-site %</span>
+              <input type="number" id="newFormatOnsite" value="20" min="0" max="100" class="w-full py-1.5 px-2 rounded bg-slate-900 border border-slate-700 text-white text-center">
+            </div>
+            <div>
+              <span class="text-[10px] text-emerald-400">Hybrid %</span>
+              <input type="number" id="newFormatHybrid" value="60" min="0" max="100" class="w-full py-1.5 px-2 rounded bg-slate-900 border border-slate-700 text-white text-center">
+            </div>
+            <div>
+              <span class="text-[10px] text-indigo-400">Remote %</span>
+              <input type="number" id="newFormatRemote" value="20" min="0" max="100" class="w-full py-1.5 px-2 rounded bg-slate-900 border border-slate-700 text-white text-center">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">ทักษะสำคัญ (Hard Skills) - คั่นด้วยจุลภาค</label>
+          <input type="text" id="newCategoryHardSkills" placeholder="Flutter, Swift, Kotlin, Firebase, REST API" value="Flutter, Kotlin, Firebase, REST API" class="w-full py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeAddEntryModal()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">ยกเลิก</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-lg shadow-indigo-600/30">
+            บันทึกสายงานใหม่
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- Global Footer -->
   <footer class="border-t border-slate-800/80 bg-slate-900/50 mt-12 py-6 text-xs text-slate-500">
@@ -917,6 +1231,7 @@
         hard_skills: ["JavaScript/TypeScript", "Python", "React/Vue", "Git", "SQL"],
         soft_skills: ["Problem Solving", "Critical Thinking", "Teamwork"],
         tools: ["Git/GitHub", "VS Code", "Docker", "Postman", "Node.js"],
+        employers: ["Agoda", "KBTG", "SCB 10X", "LINE MAN Wongnai", "Shopee", "True Digital"],
         skill_intensity: 8.8,
         competition_score: 9.2
       },
@@ -937,6 +1252,7 @@
         hard_skills: ["Meta Ads", "Google Analytics 4", "SEO/SEM", "TikTok Ads", "Content Strategy"],
         soft_skills: ["Creative Thinking", "Adaptability", "Communication"],
         tools: ["Meta Business Suite", "Google Analytics", "Canva", "TikTok Ads Manager", "Ahrefs"],
+        employers: ["Rabbit Digital Group", "Primal Digital", "Shopee Thailand", "Central Group", "Wisesight"],
         skill_intensity: 7.2,
         competition_score: 7.8
       },
@@ -957,6 +1273,7 @@
         hard_skills: ["Python", "SQL", "Pandas/NumPy", "Power BI/Tableau", "Machine Learning"],
         soft_skills: ["Analytical Thinking", "Data Storytelling", "Attention to Detail"],
         tools: ["Jupyter Notebook", "Tableau", "Power BI", "PostgreSQL", "BigQuery"],
+        employers: ["Sertis", "Data Cafe", "SCB TechX", "PTT Digital", "CP Group Analytics"],
         skill_intensity: 8.9,
         competition_score: 9.0
       },
@@ -977,6 +1294,7 @@
         hard_skills: ["Figma", "User Journey Mapping", "Wireframing", "Usability Testing", "Design System"],
         soft_skills: ["Empathy", "Active Listening", "Problem Solving"],
         tools: ["Figma", "FigJam", "Miro", "Adobe XD", "Protopie"],
+        employers: ["Seven Peaks Software", "Thoughtworks Thailand", "Bitkub", "Beacon VC", "Ascend Group"],
         skill_intensity: 7.6,
         competition_score: 8.1
       },
@@ -997,6 +1315,7 @@
         hard_skills: ["Adobe Photoshop", "Adobe Illustrator", "Typography", "Visual Branding", "Canva Pro"],
         soft_skills: ["Creative Thinking", "Visual Storytelling", "Time Management"],
         tools: ["Photoshop", "Illustrator", "InDesign", "Canva", "Midjourney"],
+        employers: ["Ogilvy Thailand", "BBDO Bangkok", "The Standard", "Workpoint", "Salmon House"],
         skill_intensity: 6.5,
         competition_score: 7.1
       },
@@ -1017,6 +1336,7 @@
         hard_skills: ["PyTorch/TensorFlow", "Generative AI/LLMs", "Python", "Data Pipeline", "LangChain"],
         soft_skills: ["Mathematical Reasoning", "Curiosity", "Continuous Learning"],
         tools: ["Hugging Face", "Ollama", "Weights & Biases", "Google Colab", "Docker"],
+        employers: ["VISTEC", "AI and Robotics Ventures (ARV)", "KASIKORN X (KX)", "Botnoi Group"],
         skill_intensity: 9.3,
         competition_score: 9.6
       },
@@ -1037,6 +1357,7 @@
         hard_skills: ["B2B Prospecting", "CRM Systems", "Market Research", "Negotiation", "Pitch Deck"],
         soft_skills: ["Persuasion", "Relationship Building", "Resilience"],
         tools: ["HubSpot", "Salesforce", "LinkedIn Sales Nav", "Google Workspace", "Notion"],
+        employers: ["Flash Express", "Grab Thailand", "foodpanda", "Ananda Development", "SCG"],
         skill_intensity: 6.8,
         competition_score: 7.4
       },
@@ -1057,6 +1378,7 @@
         hard_skills: ["Premiere Pro/CapCut", "Short-form Scripting", "TikTok/Reels Trend Analysis", "Lighting & Camera"],
         soft_skills: ["Storytelling", "Humor & Engagement", "Fast Iteration"],
         tools: ["CapCut", "Premiere Pro", "After Effects", "DaVinci Resolve", "Canva"],
+        employers: ["GMM Grammy", "SpokeDark TV", "Mission to the Moon", "Beartai", "Wongnai Media"],
         skill_intensity: 6.3,
         competition_score: 6.9
       },
@@ -1077,6 +1399,7 @@
         hard_skills: ["Linux", "AWS/GCP", "Docker", "Kubernetes", "CI/CD Pipelines", "Terraform"],
         soft_skills: ["Troubleshooting", "System Thinking", "Accountability"],
         tools: ["Docker", "Kubernetes", "GitHub Actions", "Terraform", "AWS Console"],
+        employers: ["True IDC", "AIS Enterprise", "MFEC", "NTT Thailand", "G-Able"],
         skill_intensity: 9.1,
         competition_score: 9.4
       },
@@ -1097,6 +1420,7 @@
         hard_skills: ["Financial Modeling", "Excel Advanced", "Tax & Audit", "ERP Systems", "Budget Forecasting"],
         soft_skills: ["Integrity", "High Precision", "Stress Management"],
         tools: ["MS Excel", "SAP", "Power BI", "Express Accounting", "QuickBooks"],
+        employers: ["PwC Thailand", "Deloitte Thailand", "KPMG", "EY", "Bualuang Securities"],
         skill_intensity: 7.4,
         competition_score: 7.7
       },
@@ -1117,6 +1441,7 @@
         hard_skills: ["Agile/Scrum", "PRD Writing", "Roadmapping", "Backlog Grooming", "Stakeholder Mgmt"],
         soft_skills: ["Leadership", "Cross-functional Negotiation", "Communication"],
         tools: ["Jira", "Confluence", "Notion", "Trello", "ClickUp"],
+        employers: ["Agoda", "Ascend Money (TrueMoney)", "Sunday Ins", "Finnomena", "Fastwork"],
         skill_intensity: 8.2,
         competition_score: 8.6
       },
@@ -1137,6 +1462,7 @@
         hard_skills: ["Network Security", "Vulnerability Assessment", "Wireshark", "Linux Sec", "SIEM Tools"],
         soft_skills: ["Ethical Mindset", "Deep Curiosity", "Crisis Comms"],
         tools: ["Wireshark", "Burp Suite", "Kali Linux", "Splunk", "Nessus"],
+        employers: ["Cyber Elite", "IT One", "KASIKORN Business-Technology Group", "NTT DATA"],
         skill_intensity: 8.7,
         competition_score: 8.9
       },
@@ -1157,6 +1483,7 @@
         hard_skills: ["Recruitment Screening", "HRIS Software", "Labor Law Basics", "Employee Engagement", "Training Prep"],
         soft_skills: ["Interpersonal Skill", "Empathy", "Discretion"],
         tools: ["Workday", "Darwinbox", "BambooHR", "Google Forms", "MS Excel"],
+        employers: ["Unilever Thailand", "Nestlé Thailand", "Minor International", "Thai Beverage", "Central Retail"],
         skill_intensity: 5.9,
         competition_score: 6.2
       },
@@ -1177,6 +1504,7 @@
         hard_skills: ["Test Cases Design", "Manual Testing", "Automation (Cypress/Selenium)", "Bug Tracking", "API Testing"],
         soft_skills: ["Attention to Detail", "Critical Thinking", "Tenacity"],
         tools: ["Postman", "Jira", "Selenium", "Cypress", "JMeter"],
+        employers: ["Pronto Tools", "AppMan", "SCB TechX", "Opn (Omise)", "2C2P"],
         skill_intensity: 7.5,
         competition_score: 7.6
       },
@@ -1197,6 +1525,7 @@
         hard_skills: ["Inventory Management", "ERP & WMS", "Import/Export Customs", "Fleet Coordination"],
         soft_skills: ["Problem Solving Under Pressure", "Coordination", "Negotiation"],
         tools: ["SAP ERP", "Oracle SCM", "MS Excel", "Power BI", "Google Sheets"],
+        employers: ["Kerry Express", "DHL Supply Chain", "WHA Corporation", "SCG Logistics", "Linfox"],
         skill_intensity: 6.5,
         competition_score: 6.8
       },
@@ -1217,6 +1546,7 @@
         hard_skills: ["Shopee/Lazada Seller Center", "Live Streaming Ops", "Order Fulfillment", "Campaign Setup"],
         soft_skills: ["Multitasking", "Agility", "Customer Focus"],
         tools: ["Shopee Seller Centre", "Lazada University", "TikTok Shop Partner", "Canva"],
+        employers: ["Lazada Thailand", "Shopee Thailand", "Pomelo Fashion", "Konvy", "NocNoc"],
         skill_intensity: 6.0,
         competition_score: 6.5
       },
@@ -1237,6 +1567,7 @@
         hard_skills: ["Press Release Drafting", "Media Relations", "Crisis Management", "Event Organizing"],
         soft_skills: ["Public Speaking", "Diplomacy", "Polite Negotiation"],
         tools: ["Canva", "MS PowerPoint", "Mailchimp", "Google Workspace", "Notion"],
+        employers: ["Verve PR", "TQPR Thailand", "Weber Shandwick", "Bangkok Airways PR", "CP ALL"],
         skill_intensity: 6.2,
         competition_score: 6.4
       },
@@ -1257,6 +1588,7 @@
         hard_skills: ["AutoCAD/SolidWorks", "Lean Manufacturing", "Quality Control (QC/QA)", "PLC Basics"],
         soft_skills: ["Safety Mindset", "Root Cause Analysis", "Discipline"],
         tools: ["AutoCAD", "SolidWorks", "MATLAB", "Minitab", "MS Project"],
+        employers: ["Toyota Motor Thailand", "Western Digital", "Seagate", "Denso Thailand", "Michelin"],
         skill_intensity: 7.9,
         competition_score: 7.5
       },
@@ -1277,6 +1609,7 @@
         hard_skills: ["Zendesk/Intercom", "Ticket Resolution", "User Onboarding", "CSAT Measurement"],
         soft_skills: ["Patience & Empathy", "De-escalation", "Communication"],
         tools: ["Zendesk", "Intercom", "Freshdesk", "Slack", "HubSpot"],
+        employers: ["Bitkub Online", "2C2P", "Sunday Insurance", "FlowAccount", "Klook Thailand"],
         skill_intensity: 5.7,
         competition_score: 5.8
       },
@@ -1297,6 +1630,7 @@
         hard_skills: ["Contract Drafting & Review", "PDPA Compliance", "Regulatory Research", "Due Diligence"],
         soft_skills: ["High Attention to Detail", "Confidentiality", "Logical Reasoning"],
         tools: ["MS Word", "DocuSign", "ThaiLaw Database", "Notion", "LexisNexis"],
+        employers: ["Baker McKenzie", "Weerawong C&P", "Tilleke & Gibbins", "Chandler MHM", "Siam Commercial Bank"],
         skill_intensity: 8.0,
         competition_score: 8.2
       }
@@ -1311,6 +1645,8 @@
     let tablePageSize = 20;
     let tableSortColumn = 'positions';
     let tableSortDirection = 'desc';
+    let stipendChartMode = 'daily'; // 'daily' or 'monthly'
+    let isCompareMode = false;
 
     /* Chart.js Global Registry references */
     let chartPositionsRankInstance = null;
@@ -1364,6 +1700,8 @@
             chartScatterMatrixInstance.resize();
             chartSkillIntensityInstance.resize();
           }
+          initCalculatorOptions();
+          runRoiCalculation();
         }
       }, 50);
     }
@@ -1398,7 +1736,11 @@
       // Update KPI Cards
       document.getElementById('kpiTotalCompanies').textContent = totalCompanies.toLocaleString();
       document.getElementById('kpiTotalPositions').textContent = totalPositions.toLocaleString();
+      document.getElementById('badgeTab1Count').textContent = `${internshipData.length} สายงาน`;
+      document.getElementById('kpiPositionsPerCompany').textContent = `เฉลี่ย ${(totalCompanies > 0 ? (totalPositions / totalCompanies).toFixed(1) : 0)} ตำแหน่ง ต่อ 1 บริษัท`;
       document.getElementById('kpiAvgAllowance').textContent = avgAllowance.toLocaleString();
+      document.getElementById('kpiMonthlyEstimate').innerHTML = `<span>เทียบเท่า ${(avgAllowance * 22).toLocaleString()} - ${(avgAllowance * 26).toLocaleString()} THB/เดือน (22-26 วัน)</span>`;
+
       if (topItem) {
         document.getElementById('kpiTopField').textContent = topItem.category;
         document.getElementById('kpiTopField').title = topItem.category;
@@ -1425,9 +1767,43 @@
       document.getElementById('metricFormatOnsite').textContent = `${onsitePct}%`;
       document.getElementById('metricFormatRemote').textContent = `${remotePct}%`;
 
+      // Update Cluster Counts
+      updateClusterCounts();
+
       // Update Chart Instances if active
       updateDemographicsCharts(hybridPct, onsitePct, remotePct);
       if (chartScatterMatrixInstance) updateTab3Charts();
+    }
+
+    function updateClusterCounts() {
+      const counts = { ALL: internshipData.length, Technology: 0, Creative: 0, Business: 0, Operations: 0 };
+      const positions = { Technology: 0, Creative: 0, Business: 0, Operations: 0 };
+      const totalPos = internshipData.reduce((s, i) => s + Number(i.positions || 0), 0);
+
+      internshipData.forEach(d => {
+        if (counts[d.cluster] !== undefined) {
+          counts[d.cluster]++;
+          positions[d.cluster] += Number(d.positions || 0);
+        }
+      });
+
+      document.getElementById('countCluster_ALL').textContent = counts.ALL;
+      document.getElementById('countCluster_Tech').textContent = counts.Technology;
+      document.getElementById('countCluster_Creative').textContent = counts.Creative;
+      document.getElementById('countCluster_Business').textContent = counts.Business;
+      document.getElementById('countCluster_Ops').textContent = counts.Operations;
+
+      // Update Cluster Cards in Tab 3
+      if (document.getElementById('clusterTechPositions')) {
+        document.getElementById('clusterTechPositions').textContent = `${positions.Technology.toLocaleString()} ตำแหน่ง`;
+        document.getElementById('clusterTechShare').textContent = `${totalPos > 0 ? ((positions.Technology / totalPos) * 100).toFixed(1) : 0}% สัดส่วน`;
+        document.getElementById('clusterCreativePositions').textContent = `${positions.Creative.toLocaleString()} ตำแหน่ง`;
+        document.getElementById('clusterCreativeShare').textContent = `${totalPos > 0 ? ((positions.Creative / totalPos) * 100).toFixed(1) : 0}% สัดส่วน`;
+        document.getElementById('clusterBizPositions').textContent = `${positions.Business.toLocaleString()} ตำแหน่ง`;
+        document.getElementById('clusterBizShare').textContent = `${totalPos > 0 ? ((positions.Business / totalPos) * 100).toFixed(1) : 0}% สัดส่วน`;
+        document.getElementById('clusterOpsPositions').textContent = `${positions.Operations.toLocaleString()} ตำแหน่ง`;
+        document.getElementById('clusterOpsShare').textContent = `${totalPos > 0 ? ((positions.Operations / totalPos) * 100).toFixed(1) : 0}% สัดส่วน`;
+      }
     }
 
     /* ==============================================================
@@ -1545,59 +1921,94 @@
       });
 
       // 4. Chart: Stipend Range (Min, Avg, Max for top categories)
+      renderStipendChart();
+    }
+
+    function renderStipendChart() {
       const topCategoriesForStipend = internshipData.slice(0, 8);
       const ctxStipend = document.getElementById('chartStipendRange').getContext('2d');
-      chartStipendRangeInstance = new Chart(ctxStipend, {
-        type: 'bar',
-        data: {
-          labels: topCategoriesForStipend.map(d => d.category.split(' ')[0]),
-          datasets: [
-            {
-              label: 'ค่าเฉลี่ย (Avg)',
-              data: topCategoriesForStipend.map(d => d.stipend_daily_avg),
-              backgroundColor: '#10b981',
-              borderRadius: 4
+      const multiplier = stipendChartMode === 'monthly' ? 22 : 1;
+      const unitLabel = stipendChartMode === 'monthly' ? 'THB / เดือน' : 'THB / วัน';
+
+      const dataAvg = topCategoriesForStipend.map(d => d.stipend_daily_avg * multiplier);
+      const dataMin = topCategoriesForStipend.map(d => d.stipend_daily_min * multiplier);
+      const dataMax = topCategoriesForStipend.map(d => d.stipend_daily_max * multiplier);
+
+      if (chartStipendRangeInstance) {
+        chartStipendRangeInstance.data.labels = topCategoriesForStipend.map(d => d.category.split(' ')[0]);
+        chartStipendRangeInstance.data.datasets[0].data = dataAvg;
+        chartStipendRangeInstance.data.datasets[1].data = dataMin;
+        chartStipendRangeInstance.data.datasets[2].data = dataMax;
+        chartStipendRangeInstance.options.plugins.tooltip.callbacks.label = (ctx) => ` ${ctx.dataset.label}: ${ctx.raw.toLocaleString()} ${unitLabel}`;
+        chartStipendRangeInstance.update();
+      } else {
+        chartStipendRangeInstance = new Chart(ctxStipend, {
+          type: 'bar',
+          data: {
+            labels: topCategoriesForStipend.map(d => d.category.split(' ')[0]),
+            datasets: [
+              {
+                label: 'ค่าเฉลี่ย (Avg)',
+                data: dataAvg,
+                backgroundColor: '#10b981',
+                borderRadius: 4
+              },
+              {
+                label: 'ต่ำสุด (Min)',
+                data: dataMin,
+                backgroundColor: '#64748b',
+                borderRadius: 4
+              },
+              {
+                label: 'สูงสุด (Max)',
+                data: dataMax,
+                backgroundColor: '#6366f1',
+                borderRadius: 4
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'top',
+                labels: { color: '#94a3b8', font: { size: 11 } }
+              },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` ${ctx.dataset.label}: ${ctx.raw.toLocaleString()} ${unitLabel}`
+                }
+              }
             },
-            {
-              label: 'ต่ำสุด (Min)',
-              data: topCategoriesForStipend.map(d => d.stipend_daily_min),
-              backgroundColor: '#64748b',
-              borderRadius: 4
-            },
-            {
-              label: 'สูงสุด (Max)',
-              data: topCategoriesForStipend.map(d => d.stipend_daily_max),
-              backgroundColor: '#6366f1',
-              borderRadius: 4
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'top',
-              labels: { color: '#94a3b8', font: { size: 11 } }
-            },
-            tooltip: {
-              callbacks: {
-                label: (ctx) => ` ${ctx.dataset.label}: ${ctx.raw} THB / วัน`
+            scales: {
+              y: {
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: { color: '#94a3b8' }
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: '#cbd5e1', font: { size: 10 } }
               }
             }
-          },
-          scales: {
-            y: {
-              grid: { color: 'rgba(255, 255, 255, 0.05)' },
-              ticks: { color: '#94a3b8' }
-            },
-            x: {
-              grid: { display: false },
-              ticks: { color: '#cbd5e1', font: { size: 10 } }
-            }
           }
-        }
-      });
+        });
+      }
+    }
+
+    function toggleStipendChartMode() {
+      stipendChartMode = stipendChartMode === 'daily' ? 'monthly' : 'daily';
+      const btn = document.getElementById('btnToggleStipendMode');
+      const title = document.getElementById('stipendChartTitle');
+
+      if (stipendChartMode === 'monthly') {
+        btn.innerHTML = '<i class="fa-solid fa-sun mr-1"></i> ดูรายวัน';
+        title.textContent = 'ประมาณการเบี้ยเลี้ยงรายเดือนต่ำสุด-สูงสุด-ค่าเฉลี่ย (THB/เดือน - 22 วันทำการ)';
+      } else {
+        btn.innerHTML = '<i class="fa-solid fa-calendar-days mr-1"></i> ดูรายเดือน';
+        title.textContent = 'ช่วงเบี้ยเลี้ยงรายวันต่ำสุด-สูงสุด-ค่าเฉลี่ย (THB/วัน)';
+      }
+      renderStipendChart();
     }
 
     function updateDemographicsCharts(hybridPct, onsitePct, remotePct) {
@@ -1618,12 +2029,7 @@
       }
 
       if (chartStipendRangeInstance) {
-        const topCategoriesForStipend = internshipData.slice(0, 8);
-        chartStipendRangeInstance.data.labels = topCategoriesForStipend.map(d => d.category.split(' ')[0]);
-        chartStipendRangeInstance.data.datasets[0].data = topCategoriesForStipend.map(d => d.stipend_daily_avg);
-        chartStipendRangeInstance.data.datasets[1].data = topCategoriesForStipend.map(d => d.stipend_daily_min);
-        chartStipendRangeInstance.data.datasets[2].data = topCategoriesForStipend.map(d => d.stipend_daily_max);
-        chartStipendRangeInstance.update();
+        renderStipendChart();
       }
     }
 
@@ -1640,7 +2046,8 @@
         const matchSearch = item.category.toLowerCase().includes(searchVal) ||
                             item.cluster.toLowerCase().includes(searchVal) ||
                             item.hard_skills.some(s => s.toLowerCase().includes(searchVal)) ||
-                            item.locations.some(l => l.toLowerCase().includes(searchVal));
+                            item.locations.some(l => l.toLowerCase().includes(searchVal)) ||
+                            (item.employers && item.employers.some(e => e.toLowerCase().includes(searchVal)));
 
         const matchCluster = clusterVal === 'ALL' || item.cluster === clusterVal;
 
@@ -1733,7 +2140,7 @@
             <td class="py-3 px-3 text-right font-mono text-slate-300">${row.percentage}%</td>
             <td class="py-3 px-3 text-right">
               <span class="editable-cell font-mono font-semibold text-emerald-300"
-                    contenteditable="true"
+                    contenteditable="true" 
                     title="คลิกเพื่อแก้ไขเบี้ยเลี้ยงเฉลี่ย (บาท/วัน)"
                     onblur="handleCellEdit(${row.id}, 'stipend_daily_avg', this.textContent)"
                     onkeydown="handleCellKeyDown(event, this)">
@@ -1756,17 +2163,18 @@
               </div>
             </td>
             <td class="py-3 px-3">
-              <div class="flex flex-wrap gap-1 max-w-[220px]">
+              <div class="flex flex-wrap gap-1 max-w-[200px]">
                 ${row.hard_skills.slice(0, 3).map(s => `
                   <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] border border-slate-700/60">${s}</span>
                 `).join('')}
                 ${row.hard_skills.length > 3 ? `<span class="text-slate-500 text-[10px] self-center">+${row.hard_skills.length - 3}</span>` : ''}
               </div>
             </td>
-            <td class="py-3 px-3 text-slate-400">
-              <span class="truncate block max-w-[140px]" title="${row.locations.join(', ')}">
-                ${row.locations.join(', ')}
-              </span>
+            <td class="py-3 px-3 text-center">
+              <button onclick="openDetailModal(${row.id})" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 hover:text-white border border-slate-700 text-[11px] transition flex items-center gap-1 mx-auto">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>ดูข้อมูล</span>
+              </button>
             </td>
           `;
           tbody.appendChild(tr);
@@ -1778,6 +2186,22 @@
       document.getElementById('pageIndicator').textContent = `${tableCurrentPage} / ${totalPages}`;
       document.getElementById('btnPrevPage').disabled = tableCurrentPage <= 1;
       document.getElementById('btnNextPage').disabled = tableCurrentPage >= totalPages;
+    }
+
+    function setClusterFilter(cluster) {
+      document.getElementById('filterCluster').value = cluster;
+      // Update pills styling
+      document.querySelectorAll('.pill-filter').forEach(btn => {
+        btn.classList.remove('bg-brand-500', 'text-white', 'border-brand-500');
+        btn.classList.add('bg-slate-900', 'text-slate-400', 'border-slate-700');
+      });
+      const activePill = document.getElementById(`pillCluster_${cluster}`);
+      if (activePill) {
+        activePill.classList.remove('bg-slate-900', 'text-slate-400');
+        activePill.classList.add('bg-brand-500', 'text-white', 'border-brand-500');
+      }
+      tableCurrentPage = 1;
+      renderTable();
     }
 
     function sortTable(column) {
@@ -1808,6 +2232,19 @@
       renderTable();
     }
 
+    function filterToTopCategory() {
+      let topItem = internshipData[0];
+      internshipData.forEach(item => {
+        if (Number(item.positions) > Number(topItem.positions)) topItem = item;
+      });
+      if (topItem) {
+        document.getElementById('tableSearchInput').value = topItem.category;
+        tableCurrentPage = 1;
+        renderTable();
+        showToast(`กรองเฉพาะสายงานอันดับ 1: ${topItem.category}`, 'info');
+      }
+    }
+
     function handleCellKeyDown(e, element) {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -1833,12 +2270,22 @@
     }
 
     /* ==============================================================
-       6. TAB 2 VISUALS (SKILLS & TECH)
+       6. TAB 2 VISUALS (SKILLS & TECH) & COMPARISON MODE
        ============================================================== */
     function initTab2Visuals() {
-      // Populate Category Dropdown
+      populateSkillDropdowns();
+      renderHardSkillsChart();
+      renderSoftSkillsRadar();
+      renderToolsCloud();
+      renderHeatmapMatrix();
+    }
+
+    function populateSkillDropdowns() {
       const sel = document.getElementById('skillCategorySelect');
-      if (sel && sel.options.length <= 1) {
+      const compSel = document.getElementById('skillCompareSelect');
+
+      if (sel) {
+        sel.innerHTML = '<option value="ALL">✨ รวมทุกสายงาน (All Combined)</option>';
         internshipData.forEach(item => {
           const opt = document.createElement('option');
           opt.value = item.id;
@@ -1847,77 +2294,142 @@
         });
       }
 
-      renderHardSkillsChart('ALL');
-      renderSoftSkillsRadar('ALL');
-      renderToolsCloud();
-      renderHeatmapMatrix();
+      if (compSel) {
+        compSel.innerHTML = '';
+        internshipData.forEach((item, idx) => {
+          const opt = document.createElement('option');
+          opt.value = item.id;
+          opt.textContent = `${item.id}. ${item.category}`;
+          if (idx === 1) opt.selected = true;
+          compSel.appendChild(opt);
+        });
+      }
+    }
+
+    function toggleCompareMode() {
+      isCompareMode = document.getElementById('chkCompareMode').checked;
+      const compContainer = document.getElementById('compareSelectContainer');
+      if (isCompareMode) {
+        compContainer.classList.remove('hidden');
+        if (document.getElementById('skillCategorySelect').value === 'ALL') {
+          document.getElementById('skillCategorySelect').value = '1';
+        }
+      } else {
+        compContainer.classList.add('hidden');
+      }
+      updateSkillCharts();
     }
 
     function updateSkillCharts() {
-      const selVal = document.getElementById('skillCategorySelect').value;
-      renderHardSkillsChart(selVal);
-      renderSoftSkillsRadar(selVal);
+      renderHardSkillsChart();
+      renderSoftSkillsRadar();
     }
 
-    function renderHardSkillsChart(selectedId) {
+    function renderHardSkillsChart() {
+      const selectedId = document.getElementById('skillCategorySelect')?.value || 'ALL';
+      const compareId = document.getElementById('skillCompareSelect')?.value;
       const ctx = document.getElementById('chartHardSkills').getContext('2d');
+
       let labels = [];
-      let data = [];
+      let datasets = [];
 
-      if (selectedId === 'ALL') {
-        document.getElementById('hardSkillTitle').textContent = '10 อันดับ Hard Skills ยอดนิยมของตลาดภาพรวม';
-        // Aggregate top skills across all categories
-        const skillFrequencies = {};
-        internshipData.forEach(item => {
-          item.hard_skills.forEach((skill, idx) => {
-            const weight = (item.positions / 100) * (5 - idx > 0 ? 5 - idx : 1);
-            skillFrequencies[skill] = (skillFrequencies[skill] || 0) + weight;
+      if (!isCompareMode || selectedId === 'ALL') {
+        if (selectedId === 'ALL') {
+          document.getElementById('hardSkillTitle').textContent = '10 อันดับ Hard Skills ยอดนิยมของตลาดภาพรวม';
+          const skillFrequencies = {};
+          internshipData.forEach(item => {
+            item.hard_skills.forEach((skill, idx) => {
+              const weight = (item.positions / 100) * (5 - idx > 0 ? 5 - idx : 1);
+              skillFrequencies[skill] = (skillFrequencies[skill] || 0) + weight;
+            });
           });
-        });
 
-        const sortedSkills = Object.entries(skillFrequencies)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 10);
+          const sortedSkills = Object.entries(skillFrequencies)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10);
 
-        labels = sortedSkills.map(s => s[0]);
-        // Normalize to percentage scale
-        const maxVal = sortedSkills[0][1];
-        data = sortedSkills.map(s => Math.round((s[1] / maxVal) * 95));
+          labels = sortedSkills.map(s => s[0]);
+          const maxVal = sortedSkills[0][1];
+          const data = sortedSkills.map(s => Math.round((s[1] / maxVal) * 95));
+
+          datasets = [{
+            label: 'ระดับความต้องการ (%)',
+            data: data,
+            backgroundColor: 'rgba(99, 102, 241, 0.85)',
+            borderColor: '#6366f1',
+            borderWidth: 1,
+            borderRadius: 6
+          }];
+        } else {
+          const item = internshipData.find(d => d.id == selectedId);
+          if (item) {
+            document.getElementById('hardSkillTitle').textContent = `ทักษะเฉพาะทางของสายงาน: ${item.category}`;
+            labels = item.hard_skills;
+            datasets = [{
+              label: item.category,
+              data: labels.map((_, i) => 95 - (i * 12)),
+              backgroundColor: 'rgba(99, 102, 241, 0.85)',
+              borderColor: '#6366f1',
+              borderWidth: 1,
+              borderRadius: 6
+            }];
+          }
+        }
       } else {
-        const item = internshipData.find(d => d.id == selectedId);
-        if (item) {
-          document.getElementById('hardSkillTitle').textContent = `ทักษะเฉพาะทางของสายงาน: ${item.category}`;
-          labels = item.hard_skills;
-          data = labels.map((_, i) => 95 - (i * 12));
+        // Comparison Mode
+        const itemA = internshipData.find(d => d.id == selectedId);
+        const itemB = internshipData.find(d => d.id == compareId);
+
+        if (itemA && itemB) {
+          document.getElementById('hardSkillTitle').textContent = `เปรียบเทียบ Hard Skills: ${itemA.category} vs ${itemB.category}`;
+          const combinedSkills = Array.from(new Set([...itemA.hard_skills, ...itemB.hard_skills])).slice(0, 8);
+          labels = combinedSkills;
+
+          const dataA = labels.map(s => itemA.hard_skills.includes(s) ? 90 - (itemA.hard_skills.indexOf(s) * 12) : 10);
+          const dataB = labels.map(s => itemB.hard_skills.includes(s) ? 90 - (itemB.hard_skills.indexOf(s) * 12) : 10);
+
+          datasets = [
+            {
+              label: itemA.category,
+              data: dataA,
+              backgroundColor: 'rgba(99, 102, 241, 0.85)',
+              borderColor: '#6366f1',
+              borderWidth: 1,
+              borderRadius: 6
+            },
+            {
+              label: itemB.category,
+              data: dataB,
+              backgroundColor: 'rgba(236, 72, 153, 0.85)',
+              borderColor: '#ec4899',
+              borderWidth: 1,
+              borderRadius: 6
+            }
+          ];
         }
       }
 
       if (chartHardSkillsInstance) {
         chartHardSkillsInstance.data.labels = labels;
-        chartHardSkillsInstance.data.datasets[0].data = data;
+        chartHardSkillsInstance.data.datasets = datasets;
+        chartHardSkillsInstance.options.plugins.legend.display = isCompareMode && selectedId !== 'ALL';
         chartHardSkillsInstance.update();
       } else {
         chartHardSkillsInstance = new Chart(ctx, {
           type: 'bar',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: 'ระดับความต้องการ (%)',
-              data: data,
-              backgroundColor: 'rgba(99, 102, 241, 0.85)',
-              borderColor: '#6366f1',
-              borderWidth: 1,
-              borderRadius: 6
-            }]
-          },
+          data: { labels, datasets },
           options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: { display: false },
+              legend: {
+                display: false,
+                position: 'top',
+                labels: { color: '#94a3b8', font: { size: 10 } }
+              },
               tooltip: {
                 callbacks: {
-                  label: (ctx) => ` ความต้องการ: ${ctx.raw}% ของประกาศรับสมัคร`
+                  label: (ctx) => ` ${ctx.dataset.label}: ${ctx.raw}%`
                 }
               }
             },
@@ -1938,8 +2450,11 @@
       }
     }
 
-    function renderSoftSkillsRadar(selectedId) {
+    function renderSoftSkillsRadar() {
+      const selectedId = document.getElementById('skillCategorySelect')?.value || 'ALL';
+      const compareId = document.getElementById('skillCompareSelect')?.value;
       const ctx = document.getElementById('chartSoftSkillsRadar').getContext('2d');
+
       const radarLabels = [
         'Problem Solving',
         'Team Collaboration',
@@ -1949,47 +2464,69 @@
         'Time Management'
       ];
 
-      let radarData = [92, 88, 85, 90, 84, 80];
+      function getRadarData(item) {
+        if (!item || item === 'ALL') return [92, 88, 85, 90, 84, 80];
+        if (item.cluster === 'Technology') return [96, 85, 78, 88, 94, 82];
+        if (item.cluster === 'Creative') return [86, 82, 88, 95, 85, 80];
+        if (item.cluster === 'Business') return [88, 90, 96, 92, 84, 86];
+        return [84, 92, 86, 85, 80, 90];
+      }
 
-      if (selectedId !== 'ALL') {
-        const item = internshipData.find(d => d.id == selectedId);
-        if (item) {
-          // Dynamic weights based on cluster
-          if (item.cluster === 'Technology') {
-            radarData = [96, 85, 78, 88, 94, 82];
-          } else if (item.cluster === 'Creative') {
-            radarData = [86, 82, 88, 95, 85, 80];
-          } else if (item.cluster === 'Business') {
-            radarData = [88, 90, 96, 92, 84, 86];
-          } else {
-            radarData = [84, 92, 86, 85, 80, 90];
+      let datasets = [];
+
+      if (!isCompareMode || selectedId === 'ALL') {
+        const item = selectedId === 'ALL' ? null : internshipData.find(d => d.id == selectedId);
+        datasets = [{
+          label: item ? item.category : 'All Categories',
+          data: getRadarData(item),
+          backgroundColor: 'rgba(236, 72, 153, 0.25)',
+          borderColor: '#ec4899',
+          pointBackgroundColor: '#ec4899',
+          pointBorderColor: '#fff',
+          borderWidth: 2
+        }];
+      } else {
+        const itemA = internshipData.find(d => d.id == selectedId);
+        const itemB = internshipData.find(d => d.id == compareId);
+        datasets = [
+          {
+            label: itemA?.category || 'Field A',
+            data: getRadarData(itemA),
+            backgroundColor: 'rgba(99, 102, 241, 0.25)',
+            borderColor: '#6366f1',
+            pointBackgroundColor: '#6366f1',
+            pointBorderColor: '#fff',
+            borderWidth: 2
+          },
+          {
+            label: itemB?.category || 'Field B',
+            data: getRadarData(itemB),
+            backgroundColor: 'rgba(236, 72, 153, 0.25)',
+            borderColor: '#ec4899',
+            pointBackgroundColor: '#ec4899',
+            pointBorderColor: '#fff',
+            borderWidth: 2
           }
-        }
+        ];
       }
 
       if (chartSoftSkillsRadarInstance) {
-        chartSoftSkillsRadarInstance.data.datasets[0].data = radarData;
+        chartSoftSkillsRadarInstance.data.datasets = datasets;
+        chartSoftSkillsRadarInstance.options.plugins.legend.display = isCompareMode && selectedId !== 'ALL';
         chartSoftSkillsRadarInstance.update();
       } else {
         chartSoftSkillsRadarInstance = new Chart(ctx, {
           type: 'radar',
-          data: {
-            labels: radarLabels,
-            datasets: [{
-              label: 'ระดับความสำคัญ (1-100)',
-              data: radarData,
-              backgroundColor: 'rgba(236, 72, 153, 0.25)',
-              borderColor: '#ec4899',
-              pointBackgroundColor: '#ec4899',
-              pointBorderColor: '#fff',
-              borderWidth: 2
-            }]
-          },
+          data: { labels: radarLabels, datasets },
           options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: { display: false }
+              legend: {
+                display: false,
+                position: 'top',
+                labels: { color: '#94a3b8', font: { size: 10 } }
+              }
             },
             scales: {
               r: {
@@ -2039,7 +2576,7 @@
         const span = document.createElement('span');
         span.className = `cursor-pointer px-3 py-1.5 rounded-xl border transition-all duration-200 transform hover:scale-105 ${t.size} ${badgeColor} inline-flex items-center gap-1.5 shadow-sm`;
         span.innerHTML = `<span>${t.name}</span><span class="text-[10px] opacity-60">(${t.freq})</span>`;
-        span.title = `เครื่องมือ: ${t.name} (พบในประกาศฝึกงาน ${t.freq})`;
+        span.title = `เครื่องมือ: ${t.name} (คลิกเพื่อค้นหาในตาราง Tab 1)`;
         span.onclick = () => {
           showToast(`กรองข้อมูลที่ใช้เครื่องมือ: ${t.name}`, 'info');
           document.getElementById('tableSearchInput').value = t.name.split(' ')[0];
@@ -2063,7 +2600,6 @@
         const tr = document.createElement('tr');
         tr.className = 'border-b border-slate-800/40 hover:bg-slate-800/30 transition';
 
-        // Calculate relevance values 0-100
         const isTech = item.cluster === 'Technology';
         const isCreative = item.cluster === 'Creative';
         const isBusiness = item.cluster === 'Business';
@@ -2262,7 +2798,209 @@
     }
 
     /* ==============================================================
-       8. EXPORT ENGINE: CSV & JSON
+       7.2 INTERACTIVE ROI & SKILL MATCH CALCULATOR
+       ============================================================== */
+    function initCalculatorOptions() {
+      const catSel = document.getElementById('calcCategorySelect');
+      if (catSel && catSel.options.length === 0) {
+        internshipData.forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item.id;
+          opt.textContent = `${item.id}. ${item.category} (${item.stipend_daily_avg} THB/วัน)`;
+          catSel.appendChild(opt);
+        });
+      }
+      updateCalculatorSkills();
+    }
+
+    function updateCalculatorSkills() {
+      const catId = document.getElementById('calcCategorySelect')?.value || 1;
+      const item = internshipData.find(d => d.id == catId);
+      const container = document.getElementById('calcSkillsCheckboxes');
+      if (!container || !item) return;
+
+      container.innerHTML = '';
+      item.hard_skills.forEach((skill, idx) => {
+        const lbl = document.createElement('label');
+        lbl.className = 'flex items-center gap-1.5 px-2 py-1 rounded bg-slate-800 text-[11px] text-slate-300 cursor-pointer hover:bg-slate-700 transition';
+        lbl.innerHTML = `
+          <input type="checkbox" value="${skill}" class="calc-skill-cb rounded bg-slate-900 text-brand-500" ${idx < 2 ? 'checked' : ''} onchange="runRoiCalculation()">
+          <span>${skill}</span>
+        `;
+        container.appendChild(lbl);
+      });
+    }
+
+    function runRoiCalculation() {
+      const catId = document.getElementById('calcCategorySelect')?.value || 1;
+      const expectedStipend = Number(document.getElementById('calcStipendInput')?.value || 450);
+      const item = internshipData.find(d => d.id == catId);
+      if (!item) return;
+
+      const checkedBoxes = document.querySelectorAll('.calc-skill-cb:checked');
+      const totalSkillsCount = item.hard_skills.length || 1;
+      const matchPct = Math.round((checkedBoxes.length / totalSkillsCount) * 100);
+
+      const diffPct = (((expectedStipend - item.stipend_daily_avg) / item.stipend_daily_avg) * 100).toFixed(1);
+
+      document.getElementById('calcResultMatch').textContent = `${matchPct}%`;
+      if (matchPct >= 80) {
+        document.getElementById('calcResultMatchDesc').textContent = 'ความพร้อมสูงมาก พร้อมยื่นสมัครงานระดับแนวหน้า';
+        document.getElementById('calcResultMatch').className = 'text-2xl font-extrabold text-emerald-400';
+      } else if (matchPct >= 50) {
+        document.getElementById('calcResultMatchDesc').textContent = 'ผ่านเกณฑ์พื้นฐาน ควรทำ Project เสริม';
+        document.getElementById('calcResultMatch').className = 'text-2xl font-extrabold text-indigo-400';
+      } else {
+        document.getElementById('calcResultMatchDesc').textContent = 'ทักษะยังไม่ครอบคลุม ควรศึกษาเพิ่มเติม';
+        document.getElementById('calcResultMatch').className = 'text-2xl font-extrabold text-amber-400';
+      }
+
+      const diffText = diffPct > 0 ? `+${diffPct}%` : `${diffPct}%`;
+      document.getElementById('calcResultStipendDiff').textContent = diffText;
+      if (diffPct > 15) {
+        document.getElementById('calcResultStipendDesc').textContent = `สูงกว่าค่าเฉลี่ยตลาด (${item.stipend_daily_avg} THB/วัน) ต้องมีทักษะระดับโดดเด่น`;
+      } else if (diffPct < -15) {
+        document.getElementById('calcResultStipendDesc').textContent = `ต่ำกว่าค่าเฉลี่ยตลาด มีโอกาสต่อรองเพิ่มได้`;
+      } else {
+        document.getElementById('calcResultStipendDesc').textContent = `สอดคล้องกับค่าเฉลี่ยตลาด (${item.stipend_daily_avg} THB/วัน)`;
+      }
+
+      // Quadrant label
+      let qText = '⭐ Q1: High Demand • High Pay';
+      let actionText = 'สายงานแข่งขันสูง มีศักยภาพเติบโตสูงสุด';
+      if (item.cluster === 'Creative') {
+        qText = '🎯 Q2: High Demand • Creative Focus';
+        actionText = 'เน้นความโดดเด่นของ Portfolio และความคิดสร้างสรรค์';
+      } else if (item.cluster === 'Business') {
+        qText = '💼 Q3: High Volume • Business Acumen';
+        actionText = 'เน้นการสื่อสาร การแก้ปัญหาจริง และ Data-driven';
+      } else if (item.cluster === 'Operations') {
+        qText = '⚙️ Q4: Operations & Specialized';
+        actionText = 'เน้นความแม่นยำ กระบวนการ และความร่วมมือในทีม';
+      }
+      document.getElementById('calcResultQuadrant').textContent = qText;
+      document.getElementById('calcResultAction').textContent = actionText;
+    }
+
+    /* ==============================================================
+       8. MODAL CONTROLS: DETAIL VIEW & ADD ENTRY
+       ============================================================== */
+    function openDetailModal(id) {
+      const item = internshipData.find(d => d.id === id);
+      if (!item) return;
+
+      document.getElementById('modalCategoryTitle').textContent = item.category;
+      document.getElementById('modalClusterBadge').textContent = item.cluster;
+      document.getElementById('modalPositions').textContent = `${item.positions.toLocaleString()} ตำแหน่ง`;
+      document.getElementById('modalCompanies').textContent = `${item.companies_count} แห่ง`;
+      document.getElementById('modalStipendAvg').textContent = `${item.stipend_daily_avg} บาท/วัน`;
+      document.getElementById('modalStipendMonthly').textContent = item.stipend_monthly || `${(item.stipend_daily_avg * 22).toLocaleString()} THB`;
+      document.getElementById('modalLocations').textContent = item.locations.join(', ');
+      document.getElementById('modalWorkFormat').textContent = `Onsite ${item.work_format.onsite}% | Hybrid ${item.work_format.hybrid}% | Remote ${item.work_format.remote}%`;
+
+      // Employers
+      const empContainer = document.getElementById('modalEmployersList');
+      empContainer.innerHTML = '';
+      (item.employers || ["Agoda", "SCB 10X", "KBTG", "True Digital", "Shopee"]).forEach(emp => {
+        const sp = document.createElement('span');
+        sp.className = 'px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-xs font-medium';
+        sp.innerHTML = `<i class="fa-solid fa-building text-[10px] text-cyan-400 mr-1"></i>${emp}`;
+        empContainer.appendChild(sp);
+      });
+
+      // Hard Skills
+      const hardContainer = document.getElementById('modalHardSkillsList');
+      hardContainer.innerHTML = '';
+      item.hard_skills.forEach(s => {
+        const sp = document.createElement('span');
+        sp.className = 'px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold';
+        sp.textContent = s;
+        hardContainer.appendChild(sp);
+      });
+
+      // Soft Skills
+      const softContainer = document.getElementById('modalSoftSkillsList');
+      softContainer.innerHTML = '';
+      item.soft_skills.forEach(s => {
+        const sp = document.createElement('span');
+        sp.className = 'px-2 py-0.5 rounded bg-pink-500/10 border border-pink-500/30 text-pink-300 text-[11px]';
+        sp.textContent = s;
+        softContainer.appendChild(sp);
+      });
+
+      // Tools
+      const toolContainer = document.getElementById('modalToolsList');
+      toolContainer.innerHTML = '';
+      (item.tools || []).forEach(t => {
+        const sp = document.createElement('span');
+        sp.className = 'px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px]';
+        sp.textContent = t;
+        toolContainer.appendChild(sp);
+      });
+
+      document.getElementById('detailModal').classList.remove('hidden');
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.add('hidden');
+    }
+
+    function openAddEntryModal() {
+      document.getElementById('addEntryModal').classList.remove('hidden');
+    }
+
+    function closeAddEntryModal() {
+      document.getElementById('addEntryModal').classList.add('hidden');
+    }
+
+    function handleAddEntrySubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('newCategoryName').value.trim();
+      const cluster = document.getElementById('newCategoryCluster').value;
+      const companies = Number(document.getElementById('newCategoryCompanies').value);
+      const positions = Number(document.getElementById('newCategoryPositions').value);
+      const avgStipend = Number(document.getElementById('newCategoryAvgStipend').value);
+      const maxStipend = Number(document.getElementById('newCategoryMaxStipend').value);
+      const onsite = Number(document.getElementById('newFormatOnsite').value);
+      const hybrid = Number(document.getElementById('newFormatHybrid').value);
+      const remote = Number(document.getElementById('newFormatRemote').value);
+      const skillsStr = document.getElementById('newCategoryHardSkills').value.trim();
+      const hardSkills = skillsStr ? skillsStr.split(',').map(s => s.trim()).filter(Boolean) : ["Core Skills"];
+
+      const newId = internshipData.length > 0 ? Math.max(...internshipData.map(d => d.id)) + 1 : 1;
+
+      const newEntry = {
+        id: newId,
+        category: name,
+        cluster: cluster,
+        companies_count: companies,
+        positions: positions,
+        percentage: 0,
+        stipend_daily_min: Math.max(250, avgStipend - 100),
+        stipend_daily_max: maxStipend,
+        stipend_daily_avg: avgStipend,
+        stipend_daily: `${Math.max(250, avgStipend - 100)}-${maxStipend} THB`,
+        stipend_monthly: `${(avgStipend * 20).toLocaleString()}-${(maxStipend * 22).toLocaleString()} THB`,
+        work_format: { onsite, hybrid, remote },
+        locations: ["Bangkok & Metropolitan"],
+        hard_skills: hardSkills,
+        soft_skills: ["Problem Solving", "Collaboration"],
+        tools: hardSkills.slice(0, 3),
+        employers: ["Leading Companies"],
+        skill_intensity: 7.5,
+        competition_score: 7.5
+      };
+
+      internshipData.unshift(newEntry);
+      recalculateMetrics();
+      populateSkillDropdowns();
+      renderTable();
+      closeAddEntryModal();
+      showToast(`เพิ่มสายงาน "${name}" เรียบร้อยแล้ว!`, 'success');
+    }
+
+    /* ==============================================================
+       9. EXPORT ENGINE: CSV & JSON & RESET
        ============================================================== */
     function exportToCSV() {
       const headers = [
@@ -2327,6 +3065,7 @@
       document.getElementById('filterFormat').value = 'ALL';
 
       recalculateMetrics();
+      populateSkillDropdowns();
       renderTable();
       if (currentTab === 2) updateSkillCharts();
       if (currentTab === 3) updateTab3Charts();
@@ -2335,7 +3074,7 @@
     }
 
     /* ==============================================================
-       9. TOAST NOTIFICATIONS & THEME TOGGLE
+       10. TOAST NOTIFICATIONS & THEME TOGGLE
        ============================================================== */
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
@@ -2394,7 +3133,7 @@
     }
 
     /* ==============================================================
-       10. BOOTSTRAP APPLICATION ON DOM CONTENT LOADED
+       11. BOOTSTRAP APPLICATION ON DOM CONTENT LOADED
        ============================================================== */
     document.addEventListener('DOMContentLoaded', () => {
       // Setup event listeners
@@ -2417,6 +3156,22 @@
       document.getElementById('btnExportCSV')?.addEventListener('click', exportToCSV);
       document.getElementById('btnExportJSON')?.addEventListener('click', exportToJSON);
       document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+
+      // Close modal on Escape key or backdrop click
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeDetailModal();
+          closeAddEntryModal();
+        }
+      });
+
+      document.getElementById('detailModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'detailModal') closeDetailModal();
+      });
+
+      document.getElementById('addEntryModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'addEntryModal') closeAddEntryModal();
+      });
 
       // Restore saved theme if any
       const savedTheme = localStorage.getItem('theme');
