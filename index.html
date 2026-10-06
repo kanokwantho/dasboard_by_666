@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thailand Internship Open Data Dashboard 2026</title>
   
-  <!-- Tailwind CSS CDN with typography & forms -->
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -13,36 +13,35 @@
       theme: {
         extend: {
           colors: {
-            brand: {
-              50: '#eef2ff',
-              100: '#e0e7ff',
-              200: '#c7d2fe',
-              300: '#a5b4fc',
-              400: '#818cf8',
-              500: '#6366f1',
-              600: '#4f46e5',
-              700: '#4338ca',
-              800: '#3730a3',
-              900: '#312e81',
-              950: '#1e1b4b',
+            cyber: {
+              bg: '#090c22',
+              surface: '#0d102d',
+              card: '#13173d',
+              cardHover: '#181d4a',
+              border: '#1e2456',
+              borderLight: '#2a3275'
             },
-            accent: {
-              500: '#06b6d4',
-              600: '#0891b2'
+            neon: {
+              cyan: '#00f0ff',
+              pink: '#ff2e93',
+              purple: '#8b5cf6',
+              amber: '#ff7849',
+              blue: '#3b82f6',
+              lime: '#10b981'
             }
           },
           fontFamily: {
-            sans: ['Inter', 'Prompt', 'system-ui', 'sans-serif'],
+            sans: ['Prompt', 'Inter', 'system-ui', 'sans-serif'],
           }
         }
       }
     }
   </script>
 
-  <!-- Google Fonts: Inter & Prompt for Thai/English typography -->
+  <!-- Google Fonts: Prompt (Thai) & Inter (English/Numbers) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- FontAwesome 6 Icons CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -53,55 +52,89 @@
   <style>
     body {
       font-family: 'Prompt', 'Inter', sans-serif;
+      background-color: #090c22;
+      color: #f1f5f9;
     }
+    
+    /* Neon & Cyberpunk Utility Styles */
+    .cyber-card {
+      background-color: rgba(19, 23, 61, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(34, 42, 92, 0.9);
+      border-radius: 1rem;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .cyber-card:hover {
+      border-color: rgba(0, 240, 255, 0.35);
+      box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 240, 255, 0.08);
+    }
+    
+    .light .cyber-card {
+      background-color: rgba(255, 255, 255, 0.92);
+      border-color: rgba(226, 232, 240, 0.9);
+      color: #0f172a;
+    }
+    .light body {
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+
+    /* Glows */
+    .glow-cyan {
+      box-shadow: 0 0 20px -3px rgba(0, 240, 255, 0.35);
+    }
+    .glow-pink {
+      box-shadow: 0 0 20px -3px rgba(255, 46, 147, 0.35);
+    }
+    .glow-purple {
+      box-shadow: 0 0 20px -3px rgba(139, 92, 246, 0.35);
+    }
+
     /* Custom scrollbars */
     ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
     }
     ::-webkit-scrollbar-track {
-      background: rgba(15, 23, 42, 0.6);
+      background: #090c22;
     }
     ::-webkit-scrollbar-thumb {
-      background: rgba(99, 102, 241, 0.4);
+      background: #1e2456;
       border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: rgba(99, 102, 241, 0.8);
+      background: #00f0ff;
     }
+
+    /* Editable cells */
     .editable-cell {
       cursor: text;
       transition: all 0.2s;
-      border-radius: 4px;
-      padding: 2px 6px;
+      border-radius: 6px;
+      padding: 3px 8px;
     }
     .editable-cell:hover {
-      background-color: rgba(99, 102, 241, 0.15);
-      outline: 1px dashed #6366f1;
+      background-color: rgba(0, 240, 255, 0.12);
+      outline: 1px dashed #00f0ff;
     }
     .editable-cell:focus {
-      background-color: rgba(99, 102, 241, 0.25);
-      outline: 2px solid #6366f1;
+      background-color: rgba(0, 240, 255, 0.2);
+      outline: 2px solid #00f0ff;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
     }
-    .glass-card {
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .light .glass-card {
-      background: rgba(255, 255, 255, 0.85);
-      border: 1px solid rgba(226, 232, 240, 0.8);
-    }
+
+    /* Heatmap cells */
     .heat-cell {
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
     .heat-cell:hover {
-      transform: scale(1.08);
-      z-index: 10;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transform: scale(1.1);
+      z-index: 20;
+      box-shadow: 0 4px 14px rgba(0, 240, 255, 0.4);
     }
+
     @media print {
-      header, footer, #toastContainer, .no-print {
+      aside, header, footer, #toastContainer, .no-print {
         display: none !important;
       }
       .tab-content {
@@ -111,1104 +144,1192 @@
         background: white !important;
         color: black !important;
       }
-      .glass-card {
+      .cyber-card {
         background: white !important;
         border: 1px solid #ccc !important;
         break-inside: avoid;
+        box-shadow: none !important;
       }
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen transition-colors duration-300">
+<body class="min-h-screen text-slate-100 antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
 
-  <!-- Top Notification Toast Container -->
+  <!-- Toast Notification Container -->
   <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <!-- Header & Navigation Bar -->
-  <header class="sticky top-0 z-40 bg-slate-900/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-800 transition-colors">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-20">
-        <!-- Logo and Title -->
+  <!-- APPLICATION SHELL (FLEX SIDEBAR + MAIN VIEWPORT) -->
+  <div class="flex flex-col lg:flex-row min-h-screen">
+
+    <!-- ============================================================== -->
+    <!-- 1. LEFT SIDEBAR (MOCKUP STYLE)                                 -->
+    <!-- ============================================================== -->
+    <aside id="mainSidebar" class="w-full lg:w-64 bg-cyber-surface border-r border-cyber-border flex flex-col shrink-0 lg:h-screen lg:sticky lg:top-0 z-30 transition-all select-none">
+      
+      <!-- Top Brand / Logo -->
+      <div class="p-5 flex items-center justify-between border-b border-cyber-border/80">
         <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-accent-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white font-bold text-2xl">
+          <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-neon-pink via-neon-purple to-neon-cyan flex items-center justify-center text-white font-black text-xl shadow-lg glow-pink">
             <i class="fa-solid fa-graduation-cap"></i>
           </div>
           <div>
-            <div class="flex items-center gap-2">
-              <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-indigo-100 to-indigo-300 bg-clip-text text-transparent">
-                Thailand Internship Open Data
-              </h1>
-              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                2026 Edition
+            <div class="flex items-center gap-1.5">
+              <span class="font-black text-base tracking-wider bg-gradient-to-r from-white via-cyan-100 to-cyan-300 bg-clip-text text-transparent">
+                INTERN 2026
+              </span>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                PRO
               </span>
             </div>
-            <p class="text-xs sm:text-sm text-slate-400">
-              สำรวจสถิติและการวิเคราะห์ความต้องการตลาดเด็กฝึกงานไทย (1,250+ องค์กร • 20 กลุ่มสายงาน)
-            </p>
+            <p class="text-[11px] text-slate-400 font-medium">Thailand Open Data</p>
+          </div>
+        </div>
+        
+        <!-- Mobile Sidebar Close / Indicator -->
+        <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 text-slate-400 hover:text-white">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="p-4 space-y-1.5 flex-1 overflow-y-auto">
+        <div class="text-[10px] uppercase font-bold text-slate-400 px-3 py-1.5 tracking-wider">เมนูแดชบอร์ดหลัก</div>
+        
+        <button id="sideNav1" onclick="switchTab(1)" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 border border-cyan-500/40 shadow-[0_0_15px_rgba(0,240,255,0.2)] transition text-left">
+          <i class="fa-solid fa-chart-pie text-cyan-400 text-base w-5 text-center"></i>
+          <span class="flex-1">ภาพรวม & บริษัท</span>
+          <span id="badgeTab1Count" class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/30 text-cyan-200 font-bold border border-cyan-500/30">20 สายงาน</span>
+        </button>
+
+        <button id="sideNav2" onclick="switchTab(2)" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent transition text-left">
+          <i class="fa-solid fa-microchip text-pink-400 text-base w-5 text-center"></i>
+          <span class="flex-1">ทักษะ & เครื่องมือ</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-medium">Heatmap</span>
+        </button>
+
+        <button id="sideNav3" onclick="switchTab(3)" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent transition text-left">
+          <i class="fa-solid fa-chart-line text-purple-400 text-base w-5 text-center"></i>
+          <span class="flex-1">วิเคราะห์ Demand & ROI</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-medium">Matrix</span>
+        </button>
+
+        <div class="pt-4 text-[10px] uppercase font-bold text-slate-400 px-3 py-1.5 tracking-wider">เครื่องมือวิเคราะห์</div>
+
+        <button onclick="scrollToLiveTable()" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition text-left">
+          <i class="fa-solid fa-table-cells text-amber-400 text-base w-5 text-center"></i>
+          <span>ตารางข้อมูลสด (Editable)</span>
+        </button>
+
+        <button onclick="switchTab(3); document.getElementById('calcCategorySelect').scrollIntoView({behavior:'smooth'});" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition text-left">
+          <i class="fa-solid fa-calculator text-emerald-400 text-base w-5 text-center"></i>
+          <span>คำนวณ Career & ROI</span>
+        </button>
+      </nav>
+
+      <!-- Bottom Circular Dial Widget (Directly From Mockup!) -->
+      <div class="p-4 border-t border-cyber-border/80">
+        <div class="cyber-card p-4 text-center relative overflow-hidden bg-gradient-to-b from-[#151940] to-[#0d102d]">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Market Saturation</span>
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          </div>
+
+          <!-- Circular SVG Radial Gauge -->
+          <div class="relative w-20 h-20 mx-auto mb-2 flex items-center justify-center">
+            <svg class="w-20 h-20 -rotate-90" viewBox="0 0 36 36">
+              <path class="text-slate-800/90" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              <path class="text-neon-cyan drop-shadow-[0_0_8px_rgba(0,240,255,0.7)]" stroke-dasharray="82, 100" stroke-linecap="round" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span class="text-sm font-black text-white">82%</span>
+              <span class="text-[8px] text-cyan-300 font-semibold uppercase">Active</span>
+            </div>
+          </div>
+
+          <div class="text-xs font-bold text-slate-200">4,180 ตำแหน่งรวม</div>
+          <div class="text-[10px] text-slate-400 mt-0.5">ครอบคลุม 1,250 บริษัททั่วไทย</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ============================================================== -->
+    <!-- 2. MAIN VIEWPORT & HEADER                                      -->
+    <!-- ============================================================== -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      
+      <!-- Top Executive App Bar -->
+      <header class="sticky top-0 z-20 bg-cyber-surface/90 backdrop-blur-md border-b border-cyber-border px-4 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+        
+        <!-- Left: Search Bar & Context -->
+        <div class="flex items-center gap-3 flex-1 max-w-lg">
+          <div class="relative w-full">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-sm">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <input 
+              id="topQuickSearch" 
+              type="text" 
+              oninput="syncGlobalSearch(this.value)"
+              placeholder="ค้นหาสายงาน, ทักษะ, ซอฟต์แวร์, บริษัท..." 
+              class="w-full pl-9 pr-12 py-2 rounded-xl bg-cyber-card/80 border border-cyber-border text-slate-200 placeholder-slate-400 text-xs focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition"
+            >
+            <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[10px] font-mono text-slate-400">
+              Ctrl+K
+            </span>
           </div>
         </div>
 
-        <!-- Right Quick Controls -->
-        <div class="flex items-center gap-2 sm:gap-3">
-          <!-- Add Entry Button -->
-          <button onclick="openAddEntryModal()" class="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition flex items-center gap-1.5 shadow-md shadow-indigo-600/30">
+        <!-- Right: Action Buttons, Theme, Profile -->
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+          
+          <!-- Add Category Button -->
+          <button onclick="openAddEntryModal()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-neon-pink to-neon-purple hover:brightness-110 text-white text-xs font-bold shadow-lg glow-pink transition flex items-center gap-2">
             <i class="fa-solid fa-plus"></i>
             <span class="hidden sm:inline">เพิ่มสายงาน</span>
           </button>
 
-          <!-- Reset Data Button -->
-          <button id="btnResetData" title="รีเซ็ตข้อมูลเป็นค่าเริ่มต้น" class="p-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition flex items-center gap-2 text-xs font-medium">
-            <i class="fa-solid fa-arrow-rotate-left"></i>
-            <span class="hidden md:inline">Reset</span>
-          </button>
-
           <!-- Export Buttons -->
-          <button id="btnExportCSV" class="px-3 py-2 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-medium transition flex items-center gap-1.5">
-            <i class="fa-solid fa-file-csv"></i>
-            <span class="hidden sm:inline">CSV</span>
+          <button id="btnExportCSV" class="px-3 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition flex items-center gap-1.5" title="ดาวน์โหลดเป็นไฟล์ CSV (รองรับภาษาไทย UTF-8 BOM)">
+            <i class="fa-solid fa-file-csv text-sm"></i>
+            <span class="hidden md:inline">CSV</span>
           </button>
 
-          <button id="btnExportJSON" class="px-3 py-2 rounded-lg bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 text-xs font-medium transition flex items-center gap-1.5">
-            <i class="fa-solid fa-file-code"></i>
-            <span class="hidden sm:inline">JSON</span>
+          <button id="btnExportJSON" class="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-semibold transition flex items-center gap-1.5" title="ดาวน์โหลดเป็น JSON">
+            <i class="fa-solid fa-file-code text-sm"></i>
+            <span class="hidden md:inline">JSON</span>
           </button>
 
-          <!-- Print / PDF -->
-          <button onclick="window.print()" title="พิมพ์รายงาน หรือ บันทึกเป็น PDF" class="p-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition text-xs">
-            <i class="fa-solid fa-print"></i>
+          <!-- Reset Button -->
+          <button id="btnResetData" class="p-2 rounded-xl bg-cyber-card hover:bg-slate-800 text-slate-400 hover:text-white border border-cyber-border transition" title="รีเซ็ตข้อมูลเป็นค่ามาตรฐานเริ่มต้น">
+            <i class="fa-solid fa-arrow-rotate-left text-xs"></i>
           </button>
 
-          <!-- Dark/Light Mode Toggle -->
-          <button id="themeToggle" class="p-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-400 border border-slate-700 transition" title="Toggle Theme">
-            <i class="fa-solid fa-sun text-sm"></i>
+          <!-- Print Button -->
+          <button onclick="window.print()" class="p-2 rounded-xl bg-cyber-card hover:bg-slate-800 text-slate-400 hover:text-white border border-cyber-border transition" title="พิมพ์รายงานหรือบันทึก PDF">
+            <i class="fa-solid fa-print text-xs"></i>
+          </button>
+
+          <!-- Theme Toggle -->
+          <button id="themeToggle" class="p-2 rounded-xl bg-cyber-card hover:bg-slate-800 text-slate-400 hover:text-amber-400 border border-cyber-border transition" title="สลับโหมด Dark / Light">
+            <i class="fa-solid fa-sun text-xs"></i>
+          </button>
+
+          <!-- Divider -->
+          <div class="h-6 w-px bg-cyber-border hidden sm:block"></div>
+
+          <!-- Notification Bell -->
+          <button class="relative p-2 rounded-xl bg-cyber-card hover:bg-slate-800 text-slate-400 hover:text-white border border-cyber-border transition">
+            <i class="fa-regular fa-bell text-sm"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-neon-pink animate-pulse"></span>
+          </button>
+
+          <!-- User Avatar Profile (As in Mockup!) -->
+          <div class="flex items-center gap-2 pl-1">
+            <div class="relative w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-400 to-purple-600 p-0.5">
+              <div class="w-full h-full rounded-full bg-cyber-surface flex items-center justify-center text-xs font-bold text-cyan-300">
+                KT
+              </div>
+              <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 border border-cyber-surface"></span>
+            </div>
+            <div class="hidden xl:block text-left">
+              <div class="text-xs font-bold text-slate-200">Kanokwan Th.</div>
+              <div class="text-[10px] text-slate-400">Data Lead</div>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- Sub Navigation Pill Tabs (Mobile/Responsive Tab Switcher) -->
+      <div class="px-4 lg:px-8 pt-4 pb-1 border-b border-cyber-border bg-cyber-bg/50">
+        <div class="flex items-center space-x-2 overflow-x-auto pb-2">
+          <button id="tabNav1" onclick="switchTab(1)" class="tab-btn flex items-center gap-2 py-2 px-4 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm transition whitespace-nowrap">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>1. ภาพรวม & บริษัท (Demographics)</span>
+          </button>
+
+          <button id="tabNav2" onclick="switchTab(2)" class="tab-btn flex items-center gap-2 py-2 px-4 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-cyber-card border border-transparent transition whitespace-nowrap">
+            <i class="fa-solid fa-microchip"></i>
+            <span>2. ทักษะ & ตลาดต้องการ (Skills & Tech)</span>
+          </button>
+
+          <button id="tabNav3" onclick="switchTab(3)" class="tab-btn flex items-center gap-2 py-2 px-4 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-cyber-card border border-transparent transition whitespace-nowrap">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>3. Demand & ROI Matrix</span>
           </button>
         </div>
       </div>
 
-      <!-- Tab Switcher Navigation -->
-      <div class="flex border-t border-slate-800/80 -mb-px space-x-1 sm:space-x-4 overflow-x-auto">
-        <button id="tabNav1" onclick="switchTab(1)" class="tab-btn flex items-center gap-2 py-3 px-3 sm:px-4 text-xs sm:text-sm font-semibold border-b-2 border-brand-500 text-brand-400 transition whitespace-nowrap">
-          <i class="fa-solid fa-chart-pie"></i>
-          <span>1. ข้อมูลภาพรวม & เบี้ยเลี้ยง (Demographics)</span>
-          <span id="badgeTab1Count" class="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-brand-500/20 text-brand-300">20 สายงาน</span>
-        </button>
+      <!-- MAIN CONTENT CONTAINER -->
+      <main class="p-4 lg:p-8 space-y-6">
 
-        <button id="tabNav2" onclick="switchTab(2)" class="tab-btn flex items-center gap-2 py-3 px-3 sm:px-4 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition whitespace-nowrap">
-          <i class="fa-solid fa-microchip"></i>
-          <span>2. ทักษะ & ตลาดต้องการ (Skills & Tech)</span>
-          <span class="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-400">Heatmap & Compare</span>
-        </button>
-
-        <button id="tabNav3" onclick="switchTab(3)" class="tab-btn flex items-center gap-2 py-3 px-3 sm:px-4 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition whitespace-nowrap">
-          <i class="fa-solid fa-chart-line"></i>
-          <span>3. วิเคราะห์ความคุ้มค่า & คำนวณ ROI (Analysis)</span>
-          <span class="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-400">Matrix & ROI Calc</span>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main Container -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-
-    <!-- ========================================== -->
-    <!-- TAB 1: INTERNSHIP DEMOGRAPHICS CONTENT     -->
-    <!-- ========================================== -->
-    <section id="tabContent1" class="tab-content space-y-6">
-
-      <!-- Top KPI Metric Cards (Tab 1) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- KPI 1: Total Companies -->
-        <div class="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition relative overflow-hidden group">
-          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-brand-500/10 rounded-full blur-xl group-hover:bg-brand-500/20 transition"></div>
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Companies</span>
-            <div class="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center text-brand-400">
-              <i class="fa-solid fa-building"></i>
-            </div>
-          </div>
-          <div class="mt-3">
-            <div id="kpiTotalCompanies" class="text-3xl font-extrabold text-white">1,250</div>
-            <p class="text-xs text-emerald-400 flex items-center gap-1 mt-1">
-              <i class="fa-solid fa-arrow-trend-up"></i>
-              <span>+18.4% จากปีก่อนหน้า (1,056 องค์กร)</span>
-            </p>
-          </div>
-        </div>
-
-        <!-- KPI 2: Total Positions -->
-        <div class="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition relative overflow-hidden group">
-          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl group-hover:bg-cyan-500/20 transition"></div>
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Positions</span>
-            <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
-              <i class="fa-solid fa-users-gear"></i>
-            </div>
-          </div>
-          <div class="mt-3">
-            <div id="kpiTotalPositions" class="text-3xl font-extrabold text-white">4,180</div>
-            <p class="text-xs text-slate-400 flex items-center gap-1 mt-1">
-              <span id="kpiPositionsPerCompany">เฉลี่ย 3.3 ตำแหน่ง ต่อ 1 บริษัท</span>
-            </p>
-          </div>
-        </div>
-
-        <!-- KPI 3: Avg Daily Allowance -->
-        <div class="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition relative overflow-hidden group">
-          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition"></div>
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Avg. Daily Allowance</span>
-            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-              <i class="fa-solid fa-baht-sign"></i>
-            </div>
-          </div>
-          <div class="mt-3">
-            <div class="flex items-baseline gap-1.5">
-              <span id="kpiAvgAllowance" class="text-3xl font-extrabold text-white">418</span>
-              <span class="text-sm font-semibold text-emerald-400">THB / วัน</span>
-            </div>
-            <p id="kpiMonthlyEstimate" class="text-xs text-slate-400 flex items-center gap-1 mt-1">
-              <span>เทียบเท่า 9,200 - 13,500 THB/เดือน</span>
-            </p>
-          </div>
-        </div>
-
-        <!-- KPI 4: Top Demanded Field -->
-        <div class="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition relative overflow-hidden group cursor-pointer" onclick="filterToTopCategory()">
-          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition"></div>
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Top Demanded Field</span>
-            <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
-              <i class="fa-solid fa-trophy"></i>
-            </div>
-          </div>
-          <div class="mt-3">
-            <div id="kpiTopField" class="text-xl font-extrabold text-white truncate" title="Software Engineering">Software Eng.</div>
-            <p id="kpiTopFieldShare" class="text-xs text-purple-300 flex items-center gap-1 mt-1">
-              <span>600 ตำแหน่ง (14.4% ของตลาด)</span>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab 1 Charts Row 1: Positions Rank & Work Format Donut -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Horizontal Bar Chart: Ranked Categories -->
-        <div class="lg:col-span-2 glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-            <div>
-              <h2 class="text-base font-bold text-white flex items-center gap-2">
-                <i class="fa-solid fa-chart-simple text-indigo-400"></i>
-                <span>สัดส่วนจำนวนเปิดรับเด็กฝึกงานแยกตามสายงาน (Ranked Categories)</span>
-              </h2>
-              <p class="text-xs text-slate-400">เรียงตามปริมาณตำแหน่งงานที่เปิดรับ (Live update เมื่อแก้ไขตารางด้านล่าง)</p>
-            </div>
-            <span class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-              หน่วย: จำนวนตำแหน่ง
-            </span>
-          </div>
-          <div class="relative flex-1 min-h-[360px]">
-            <canvas id="chartPositionsRank"></canvas>
-          </div>
-        </div>
-
-        <!-- Work Format Donut Chart -->
-        <div class="glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <h2 class="text-base font-bold text-white flex items-center gap-2">
-                <i class="fa-solid fa-laptop-house text-cyan-400"></i>
-                <span>รูปแบบการทำงาน (Work Format)</span>
-              </h2>
-              <p class="text-xs text-slate-400">สัดส่วน On-site vs Hybrid vs Remote</p>
-            </div>
-          </div>
-          <div class="relative flex-1 min-h-[260px] flex items-center justify-center">
-            <canvas id="chartWorkFormat"></canvas>
-          </div>
-          <!-- Format Quick Metrics -->
-          <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-slate-800/80 text-center text-xs">
-            <div class="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-              <span class="text-slate-400 block text-[11px]">Hybrid</span>
-              <span id="metricFormatHybrid" class="font-bold text-emerald-400 text-sm">48.5%</span>
-            </div>
-            <div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
-              <span class="text-slate-400 block text-[11px]">On-site</span>
-              <span id="metricFormatOnsite" class="font-bold text-amber-400 text-sm">38.2%</span>
-            </div>
-            <div class="p-2 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
-              <span class="text-slate-400 block text-[11px]">Remote</span>
-              <span id="metricFormatRemote" class="font-bold text-indigo-400 text-sm">13.3%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab 1 Charts Row 2: Regional Distribution & Stipend Range Box-Bar -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Regional Distribution Bar Chart -->
-        <div class="glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
-          <div class="flex items-center justify-between mb-3">
-            <div>
-              <h2 class="text-base font-bold text-white flex items-center gap-2">
-                <i class="fa-solid fa-map-location-dot text-rose-400"></i>
-                <span>การกระจายตัวของตำแหน่งฝึกงานตามภูมิภาค (Geographic Hubs)</span>
-              </h2>
-              <p class="text-xs text-slate-400">ศูนย์กลางเศรษฐกิจและหัวเมืองหลักในประเทศไทย</p>
-            </div>
-          </div>
-          <div class="relative flex-1 min-h-[260px]">
-            <canvas id="chartRegions"></canvas>
-          </div>
-        </div>
-
-        <!-- Stipend Range Comparison Bar Chart -->
-        <div class="glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
-          <div class="flex items-center justify-between mb-3">
-            <div>
-              <h2 class="text-base font-bold text-white flex items-center gap-2">
-                <i class="fa-solid fa-money-bill-trend-up text-emerald-400"></i>
-                <span id="stipendChartTitle">ช่วงเบี้ยเลี้ยงรายวันต่ำสุด-สูงสุด-ค่าเฉลี่ย (THB/วัน)</span>
-              </h2>
-              <p class="text-xs text-slate-400">เปรียบเทียบอัตราผลตอบแทนแยกตามกลุ่มงานสำคัญ</p>
-            </div>
-            <!-- View Mode Toggle Button -->
-            <button onclick="toggleStipendChartMode()" id="btnToggleStipendMode" class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-slate-700 transition">
-              <i class="fa-solid fa-calendar-days mr-1"></i> ดูรายเดือน
-            </button>
-          </div>
-          <div class="relative flex-1 min-h-[260px]">
-            <canvas id="chartStipendRange"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab 1: Interactive & Editable Data Grid Section -->
-      <div class="glass-card rounded-2xl p-5 sm:p-6 border border-slate-800 shadow-xl space-y-4">
-        <!-- Grid Header, Search & Filter Bar -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                <i class="fa-solid fa-table-list text-brand-400"></i>
-                <span>ตารางข้อมูลสถิติเด็กฝึกงาน (Interactive Editable Data Grid)</span>
-              </h2>
-              <span class="text-xs px-2 py-0.5 rounded bg-brand-500/20 text-brand-300 border border-brand-500/30 font-mono">
-                Live Sync Enabled
+        <!-- ============================================================== -->
+        <!-- EXECUTIVE KPI STRIP (SIGNATURE 01, 02, 03 CARDS FROM MOCKUP)    -->
+        <!-- ============================================================== -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+          
+          <!-- CARD 01: TOTAL COMPANIES (PINK-MAGENTA GRADIENT) -->
+          <div class="cyber-card p-5 relative overflow-hidden group border-neon-pink/30 hover:border-neon-pink/70">
+            <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-neon-pink/10 blur-xl pointer-events-none"></div>
+            
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-black tracking-widest text-white px-2.5 py-0.5 rounded-md bg-gradient-to-r from-neon-pink to-rose-500 shadow-sm">
+                01
+              </span>
+              <span class="text-[11px] font-semibold text-emerald-400 flex items-center gap-1 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                <i class="fa-solid fa-arrow-trend-up"></i> +12.4% YoY
               </span>
             </div>
-            <p class="text-xs text-slate-400 mt-1">
-              💡 คุณสามารถคลิกแก้ไขตัวเลขในคอลัมน์ <span class="text-indigo-400 font-semibold underline">จำนวนตำแหน่ง</span> หรือ <span class="text-emerald-400 font-semibold underline">เบี้ยเลี้ยง</span> ในตารางได้โดยตรง หรือคลิกปุ่ม <span class="text-cyan-400 font-semibold">ดูข้อมูล</span> เพื่อดูบริษัทตัวอย่าง
-            </p>
-          </div>
 
-          <!-- Controls: Search, Format Filter -->
-          <div class="flex flex-wrap items-center gap-2">
-            <!-- Search Input -->
-            <div class="relative min-w-[200px]">
-              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-              <input id="tableSearchInput" type="text" placeholder="ค้นหาสายงาน, ทักษะ, จังหวัด..." 
-                     class="w-full pl-9 pr-3 py-2 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition">
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+              บริษัทเปิดรับทั้งหมด (Companies)
+            </div>
+            
+            <div class="flex items-baseline gap-2">
+              <div id="kpiTotalCompanies" class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+                1,250
+              </div>
+              <span class="text-xs text-slate-400">องค์กร</span>
             </div>
 
-            <!-- Cluster / Category Filter -->
-            <select id="filterCluster" class="py-2 px-3 text-xs rounded-lg bg-slate-900 border border-slate-700 text-slate-300 focus:outline-none focus:border-brand-500">
-              <option value="ALL">กลุ่มสายงานทั้งหมด (All)</option>
-              <option value="Technology">Technology & Software</option>
-              <option value="Creative">Creative & Media</option>
-              <option value="Business">Business & Marketing</option>
-              <option value="Operations">Operations & Engineering</option>
-            </select>
-
-            <!-- Work Format Filter -->
-            <select id="filterFormat" class="py-2 px-3 text-xs rounded-lg bg-slate-900 border border-slate-700 text-slate-300 focus:outline-none focus:border-brand-500">
-              <option value="ALL">ทุกรูปแบบการทำงาน</option>
-              <option value="HIGH_HYBRID">เน้น Hybrid (&gt;45%)</option>
-              <option value="HIGH_REMOTE">มี Remote (&gt;15%)</option>
-              <option value="HIGH_ONSITE">เน้น On-site (&gt;45%)</option>
-            </select>
+            <div class="mt-3 pt-3 border-t border-cyber-border/60 flex items-center justify-between text-[11px] text-slate-400">
+              <span>ครอบคลุม 20 กลุ่มสายงาน</span>
+              <span class="text-neon-pink font-semibold">100% สัดส่วน</span>
+            </div>
           </div>
-        </div>
 
-        <!-- Pill Quick Filters for Clusters -->
-        <div class="flex flex-wrap items-center gap-2 pt-1 pb-1">
-          <span class="text-xs text-slate-500 mr-1">กลุ่มด่วน:</span>
-          <button onclick="setClusterFilter('ALL')" id="pillCluster_ALL" class="pill-filter px-3 py-1 rounded-full text-xs font-medium bg-brand-500 text-white border border-brand-500 transition">
-            ทั้งหมด (<span id="countCluster_ALL">20</span>)
-          </button>
-          <button onclick="setClusterFilter('Technology')" id="pillCluster_Technology" class="pill-filter px-3 py-1 rounded-full text-xs font-medium bg-slate-900 hover:bg-slate-800 text-indigo-300 border border-slate-700 transition">
-            💻 Tech (<span id="countCluster_Tech">6</span>)
-          </button>
-          <button onclick="setClusterFilter('Creative')" id="pillCluster_Creative" class="pill-filter px-3 py-1 rounded-full text-xs font-medium bg-slate-900 hover:bg-slate-800 text-purple-300 border border-slate-700 transition">
-            🎨 Creative (<span id="countCluster_Creative">3</span>)
-          </button>
-          <button onclick="setClusterFilter('Business')" id="pillCluster_Business" class="pill-filter px-3 py-1 rounded-full text-xs font-medium bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-slate-700 transition">
-            💼 Business (<span id="countCluster_Business">5</span>)
-          </button>
-          <button onclick="setClusterFilter('Operations')" id="pillCluster_Operations" class="pill-filter px-3 py-1 rounded-full text-xs font-medium bg-slate-900 hover:bg-slate-800 text-amber-300 border border-slate-700 transition">
-            ⚙️ Operations (<span id="countCluster_Ops">6</span>)
-          </button>
-        </div>
+          <!-- CARD 02: TOTAL POSITIONS (CYAN-BLUE GRADIENT) -->
+          <div class="cyber-card p-5 relative overflow-hidden group border-neon-cyan/30 hover:border-neon-cyan/70">
+            <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-neon-cyan/10 blur-xl pointer-events-none"></div>
 
-        <!-- Table Container -->
-        <div class="overflow-x-auto rounded-xl border border-slate-800">
-          <table id="internshipDataTable" class="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr class="bg-slate-900/90 text-slate-400 border-b border-slate-800 select-none">
-                <th onclick="sortTable('id')" class="py-3 px-3 cursor-pointer hover:text-white transition">
-                  # <i id="sortIcon_id" class="fa-solid fa-sort ml-1"></i>
-                </th>
-                <th onclick="sortTable('category')" class="py-3 px-4 cursor-pointer hover:text-white transition">
-                  สายงาน / สาขาวิชา (Job Category) <i id="sortIcon_category" class="fa-solid fa-sort ml-1"></i>
-                </th>
-                <th onclick="sortTable('cluster')" class="py-3 px-3 cursor-pointer hover:text-white transition">
-                  กลุ่มสายงาน <i id="sortIcon_cluster" class="fa-solid fa-sort ml-1"></i>
-                </th>
-                <th onclick="sortTable('positions')" class="py-3 px-3 cursor-pointer hover:text-white transition text-right">
-                  จำนวนตำแหน่ง (แก้ไขได้ ✍️) <i id="sortIcon_positions" class="fa-solid fa-sort ml-1"></i>
-                </th>
-                <th onclick="sortTable('percentage')" class="py-3 px-3 cursor-pointer hover:text-white transition text-right">
-                  สัดส่วน % <i id="sortIcon_percentage" class="fa-solid fa-sort ml-1"></i>
-                </th>
-                <th onclick="sortTable('stipend_daily_avg')" class="py-3 px-3 cursor-pointer hover:text-white transition text-right">
-                  เบี้ยเลี้ยงเฉลี่ย (บาท/วัน ✍️) <i id="sortIcon_stipend_daily_avg" class="fa-solid fa-sort ml-1"></i>
-                </th>
-                <th class="py-3 px-3 text-center">
-                  สัดส่วนทำงาน (On / Hyb / Rem)
-                </th>
-                <th class="py-3 px-3">
-                  ทักษะสำคัญ (Hard Skills)
-                </th>
-                <th class="py-3 px-3 text-center">
-                  แอ็กชัน
-                </th>
-              </tr>
-            </thead>
-            <tbody id="tableBody" class="divide-y divide-slate-800/60 font-sans">
-              <!-- Rendered via JavaScript -->
-            </tbody>
-          </table>
-        </div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-black tracking-widest text-white px-2.5 py-0.5 rounded-md bg-gradient-to-r from-cyan-500 to-blue-600 shadow-sm">
+                02
+              </span>
+              <span class="text-[11px] font-semibold text-cyan-300 flex items-center gap-1 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
+                <i class="fa-solid fa-users"></i> อัตรากำลัง
+              </span>
+            </div>
 
-        <!-- Table Pagination and Info Footer -->
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs text-slate-400">
-          <div id="tableInfoText">
-            แสดง 1 - 20 จากทั้งหมด 20 รายการ
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+              ตำแหน่งงานเปิดรับรวม (Positions)
+            </div>
+
+            <div class="flex items-baseline gap-2">
+              <div id="kpiTotalPositions" class="text-3xl sm:text-4xl font-black text-white tracking-tight text-cyan-300">
+                4,180
+              </div>
+              <span class="text-xs text-slate-400">อัตรา</span>
+            </div>
+
+            <div class="mt-3 pt-3 border-t border-cyber-border/60 flex items-center justify-between text-[11px] text-slate-400">
+              <span>เฉลี่ยต่อบริษัท</span>
+              <span id="kpiPositionsPerCompany" class="text-cyan-400 font-bold">3.34 ตำแหน่ง</span>
+            </div>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="text-slate-500">แสดงต่อหน้า:</span>
-            <select id="pageSizeSelect" onchange="changePageSize(this.value)" class="py-1 px-2 rounded bg-slate-900 border border-slate-700 text-slate-300 focus:outline-none">
-              <option value="10">10 แถว</option>
-              <option value="20" selected>20 แถว (ทั้งหมด)</option>
-            </select>
-            <div class="flex items-center gap-1 ml-2">
-              <button id="btnPrevPage" onclick="prevPage()" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-40 disabled:pointer-events-none">
-                <i class="fa-solid fa-chevron-left"></i>
+
+          <!-- CARD 03: AVERAGE DAILY ALLOWANCE (PURPLE-VIOLET GRADIENT) -->
+          <div class="cyber-card p-5 relative overflow-hidden group border-neon-purple/30 hover:border-neon-purple/70">
+            <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-neon-purple/10 blur-xl pointer-events-none"></div>
+
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-black tracking-widest text-white px-2.5 py-0.5 rounded-md bg-gradient-to-r from-purple-600 to-fuchsia-600 shadow-sm">
+                03
+              </span>
+              <span class="text-[11px] font-semibold text-purple-300 flex items-center gap-1 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
+                <i class="fa-solid fa-coins"></i> เบี้ยเลี้ยง
+              </span>
+            </div>
+
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+              ค่าเฉลี่ยเบี้ยเลี้ยงต่อวัน (Daily Stipend)
+            </div>
+
+            <div class="flex items-baseline gap-2">
+              <div id="kpiAvgAllowance" class="text-3xl sm:text-4xl font-black text-white tracking-tight text-purple-300">
+                418 ฿/วัน
+              </div>
+            </div>
+
+            <div class="mt-3 pt-3 border-t border-cyber-border/60 flex items-center justify-between text-[11px] text-slate-400">
+              <span id="kpiMonthlyEstimate">~9,200 ฿/เดือน</span>
+              <span class="text-purple-400 font-bold">สูงสุด 550 ฿/วัน</span>
+            </div>
+          </div>
+
+          <!-- CARD 04: CIRCULAR DIALS & FORMAT PROGRESS BARS (MOCKUP SIGNATURE COMPONENT) -->
+          <div class="cyber-card p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Work Format & Mix</span>
+                <span class="text-[10px] text-cyan-400 font-mono">LIVE RATIO</span>
+              </div>
+
+              <!-- 3 Circular Mini-Dials (As in Screen 1 & 2 of Mockup!) -->
+              <div class="grid grid-cols-3 gap-2 text-center py-1">
+                <!-- Dial 1: Hybrid -->
+                <div class="flex flex-col items-center">
+                  <div class="relative w-11 h-11 flex items-center justify-center">
+                    <svg class="w-11 h-11 -rotate-90" viewBox="0 0 36 36">
+                      <path class="text-slate-800" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <path class="text-neon-cyan drop-shadow-[0_0_6px_rgba(0,240,255,0.7)]" stroke-dasharray="48.5, 100" stroke-linecap="round" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    </svg>
+                    <span id="metricFormatHybrid" class="absolute text-[10px] font-black text-cyan-300">48.5%</span>
+                  </div>
+                  <span class="text-[9px] font-semibold text-slate-400 mt-1">Hybrid</span>
+                </div>
+
+                <!-- Dial 2: On-site -->
+                <div class="flex flex-col items-center">
+                  <div class="relative w-11 h-11 flex items-center justify-center">
+                    <svg class="w-11 h-11 -rotate-90" viewBox="0 0 36 36">
+                      <path class="text-slate-800" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <path class="text-neon-pink drop-shadow-[0_0_6px_rgba(255,46,147,0.7)]" stroke-dasharray="38.2, 100" stroke-linecap="round" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    </svg>
+                    <span id="metricFormatOnsite" class="absolute text-[10px] font-black text-pink-300">38.2%</span>
+                  </div>
+                  <span class="text-[9px] font-semibold text-slate-400 mt-1">On-site</span>
+                </div>
+
+                <!-- Dial 3: Remote -->
+                <div class="flex flex-col items-center">
+                  <div class="relative w-11 h-11 flex items-center justify-center">
+                    <svg class="w-11 h-11 -rotate-90" viewBox="0 0 36 36">
+                      <path class="text-slate-800" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <path class="text-neon-purple drop-shadow-[0_0_6px_rgba(139,92,246,0.7)]" stroke-dasharray="13.3, 100" stroke-linecap="round" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    </svg>
+                    <span id="metricFormatRemote" class="absolute text-[10px] font-black text-purple-300">13.3%</span>
+                  </div>
+                  <span class="text-[9px] font-semibold text-slate-400 mt-1">Remote</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dual Gradient Progress Tracks (From Mockup!) -->
+            <div class="mt-3 pt-2 border-t border-cyber-border/60 space-y-1.5">
+              <div>
+                <div class="flex justify-between text-[10px] text-slate-400 mb-0.5">
+                  <span>Hybrid + Remote Flex</span>
+                  <span class="font-bold text-cyan-300">61.8%</span>
+                </div>
+                <div class="w-full bg-slate-800/80 rounded-full h-1.5 overflow-hidden">
+                  <div class="bg-gradient-to-r from-neon-cyan to-neon-purple h-1.5 rounded-full" style="width: 61.8%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- TAB 1: INTERNSHIP DEMOGRAPHICS                                 -->
+        <!-- ============================================================== -->
+        <div id="tabContent1" class="tab-content space-y-6">
+
+          <!-- Sub-Banner: Top Demanded Field Highlight -->
+          <div class="cyber-card p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-gradient-to-r from-cyber-card via-[#161c47] to-cyber-card border-cyan-500/30">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-300 text-xl shrink-0">
+                <i class="fa-solid fa-trophy"></i>
+              </div>
+              <div>
+                <div class="text-[11px] uppercase font-bold text-cyan-400 tracking-wider">สายงานที่มีความต้องการสูงสุดอันดับ 1</div>
+                <div class="flex items-baseline gap-2 mt-0.5">
+                  <span id="kpiTopField" class="text-xl sm:text-2xl font-black text-white hover:text-cyan-300 cursor-pointer transition" onclick="filterToTopCategory()">
+                    Software Engineering
+                  </span>
+                  <span id="kpiTopFieldShare" class="text-xs font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                    14.4% ของตลาด
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-2 self-end md:self-center">
+              <button onclick="filterToTopCategory()" class="px-3.5 py-1.5 rounded-lg bg-cyber-card hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-filter"></i>
+                <span>กรองดูสายงานนี้</span>
               </button>
-              <span id="pageIndicator" class="px-2 py-1 font-mono text-slate-300">1 / 1</span>
-              <button id="btnNextPage" onclick="nextPage()" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-40 disabled:pointer-events-none">
-                <i class="fa-solid fa-chevron-right"></i>
-              </button>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
 
-
-    <!-- ========================================== -->
-    <!-- TAB 2: SKILLS & REQUIREMENTS CONTENT       -->
-    <!-- ========================================== -->
-    <section id="tabContent2" class="tab-content hidden space-y-6">
-
-      <!-- Top KPI Metric Cards (Tab 2) -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <!-- KPI: Top Hard Skill -->
-        <div class="glass-card rounded-2xl p-5 border border-slate-800">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Top Hard Skill In Demand</span>
-            <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
-              <i class="fa-solid fa-code"></i>
-            </div>
-          </div>
-          <div class="mt-3">
-            <div class="text-2xl font-extrabold text-white">JavaScript / TypeScript</div>
-            <p class="text-xs text-indigo-300 flex items-center gap-1 mt-1">
-              <span>ระบุใน 78% ของตำแหน่งงานสายเทคฯ และดิจิทัล</span>
-            </p>
-          </div>
-        </div>
-
-        <!-- KPI: Top Soft Skill -->
-        <div class="glass-card rounded-2xl p-5 border border-slate-800">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Top Soft Skill In Demand</span>
-            <div class="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400">
-              <i class="fa-solid fa-lightbulb"></i>
-            </div>
-          </div>
-          <div class="mt-3">
-            <div class="text-2xl font-extrabold text-white">Problem Solving & Logic</div>
-            <p class="text-xs text-pink-300 flex items-center gap-1 mt-1">
-              <span>ความสามารถในการแก้ปัญหาเชิงโครงสร้างระบุมากกว่า 85%</span>
-            </p>
-          </div>
-        </div>
-
-        <!-- KPI: Top Tool / Platform -->
-        <div class="glass-card rounded-2xl p-5 border border-slate-800">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Top Tool / Software</span>
-            <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
-              <i class="fa-solid fa-screwdriver-wrench"></i>
-            </div>
-          </div>
-          <div class="mt-3">
-            <div class="text-2xl font-extrabold text-white">Git & GitHub / Figma</div>
-            <p class="text-xs text-cyan-300 flex items-center gap-1 mt-1">
-              <span>เครื่องมือ Version Control และ Collaborative Design มาตรฐาน</span>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Controls & Comparison Bar for Tab 2 -->
-      <div class="glass-card rounded-2xl p-4 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-sliders text-indigo-400"></i>
-          <div>
-            <span class="text-sm font-bold text-white">ตัวกรองและการเปรียบเทียบทักษะ:</span>
-            <span class="text-xs text-slate-400 block sm:inline sm:ml-1">เลือกเพื่อเจาะลึกทักษะเฉพาะด้าน หรือ เปรียบเทียบ 2 สายงาน</span>
-          </div>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-3">
-          <!-- Single Select -->
-          <div class="flex items-center gap-1.5">
-            <label for="skillCategorySelect" class="text-xs text-slate-400 whitespace-nowrap">สายงานหลัก:</label>
-            <select id="skillCategorySelect" onchange="updateSkillCharts()" class="py-2 px-3 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
-              <option value="ALL">✨ รวมทุกสายงาน (All Combined)</option>
-            </select>
-          </div>
-
-          <!-- Comparison Checkbox -->
-          <label class="flex items-center gap-2 cursor-pointer text-xs text-indigo-300 bg-slate-900 px-3 py-2 rounded-lg border border-slate-700">
-            <input type="checkbox" id="chkCompareMode" onchange="toggleCompareMode()" class="rounded bg-slate-800 border-slate-600 text-brand-500">
-            <span>เปรียบเทียบ 2 สายงาน</span>
-          </label>
-
-          <!-- Compare Select (Hidden by default) -->
-          <div id="compareSelectContainer" class="hidden flex items-center gap-1.5">
-            <label for="skillCompareSelect" class="text-xs text-pink-400 whitespace-nowrap">เทียบกับ:</label>
-            <select id="skillCompareSelect" onchange="updateSkillCharts()" class="py-2 px-3 text-xs rounded-lg bg-slate-900 border border-pink-500/40 text-pink-300 focus:outline-none">
-              <!-- Dynamically populated -->
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab 2 Visuals: Hard Skills Bar Chart + Soft Skills Radar Chart -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Hard Skills Bar Chart (7 Cols) -->
-        <div class="lg:col-span-7 glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <h2 class="text-base font-bold text-white flex items-center gap-2">
-                <i class="fa-solid fa-code text-indigo-400"></i>
-                <span id="hardSkillTitle">10 อันดับ Hard Skills ที่ต้องการมากที่สุด</span>
-              </h2>
-              <p class="text-xs text-slate-400">ความถี่และสัดส่วนที่ระบุในประกาศรับสมัคร</p>
-            </div>
-            <span class="text-xs px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 font-mono">
-              ความถี่การระบุ (%)
-            </span>
-          </div>
-          <div class="relative flex-1 min-h-[350px]">
-            <canvas id="chartHardSkills"></canvas>
-          </div>
-        </div>
-
-        <!-- Soft Skills Radar Chart (5 Cols) -->
-        <div class="lg:col-span-5 glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <h2 class="text-base font-bold text-white flex items-center gap-2">
-                <i class="fa-solid fa-compass-drafting text-pink-400"></i>
-                <span>Soft Skills Competency Radar</span>
-              </h2>
-              <p class="text-xs text-slate-400">ระดับความสำคัญของทักษะการทำงานร่วมกับผู้อื่น (คะแนน 1-100)</p>
-            </div>
-          </div>
-          <div class="relative flex-1 min-h-[350px] flex items-center justify-center">
-            <canvas id="chartSoftSkillsRadar"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tools & Software Interactive Bubble / Tag Cloud -->
-      <div class="glass-card rounded-2xl p-5 border border-slate-800">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-          <div>
-            <h2 class="text-base font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-cubes-stacked text-amber-400"></i>
-              <span>เครื่องมือ, ภาษาโปรแกรม และ Software Platforms ยอดนิยม</span>
-            </h2>
-            <p class="text-xs text-slate-400">คลิกที่เครื่องมือเพื่อค้นหาสายงานที่ต้องการเครื่องมือนั้นในตารางทันที</p>
-          </div>
-          <div class="flex items-center gap-3 text-xs text-slate-400">
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-indigo-500/80 inline-block"></span> เทคโนโลยีสูง</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500/80 inline-block"></span> ธุรกิจ & การตลาด</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-purple-500/80 inline-block"></span> ครีเอทีฟ & ดีไซน์</span>
-          </div>
-        </div>
-        <div id="toolsCloudContainer" class="flex flex-wrap gap-2.5 p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 justify-center">
-          <!-- Rendered via JS -->
-        </div>
-      </div>
-
-      <!-- Skill Heatmap Matrix Table -->
-      <div class="glass-card rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <h2 class="text-base font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-border-all text-emerald-400"></i>
-              <span>Skill Heatmap Matrix: 20 สายงาน × Top 10 Core Skills & Tools</span>
-            </h2>
-            <p class="text-xs text-slate-400">ตารางความสัมพันธ์ระดับความต้องการทักษะ (สีเข้ม = ความต้องการสูงมาก > 75%)</p>
-          </div>
-          <div class="flex items-center gap-2 text-xs">
-            <span class="text-slate-400">ระดับความต้องการ:</span>
-            <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px]">ต่ำ (&lt;20%)</span>
-            <span class="px-2 py-0.5 rounded bg-indigo-900/50 text-indigo-300 text-[10px]">ปานกลาง (20-60%)</span>
-            <span class="px-2 py-0.5 rounded bg-indigo-600 text-white font-bold text-[10px]">สูงมาก (&gt;60%)</span>
-          </div>
-        </div>
-
-        <div class="overflow-x-auto rounded-xl border border-slate-800">
-          <table id="heatmapTable" class="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr class="bg-slate-900 text-slate-300 border-b border-slate-800">
-                <th class="py-3 px-3 min-w-[200px] sticky left-0 bg-slate-900 z-10">สายงาน (Job Category)</th>
-                <th class="py-3 px-2 text-center">JavaScript / TS</th>
-                <th class="py-3 px-2 text-center">Python / AI</th>
-                <th class="py-3 px-2 text-center">SQL / Database</th>
-                <th class="py-3 px-2 text-center">Git & GitHub</th>
-                <th class="py-3 px-2 text-center">Figma / UI</th>
-                <th class="py-3 px-2 text-center">Digital Ads / SEO</th>
-                <th class="py-3 px-2 text-center">Data Analytics / BI</th>
-                <th class="py-3 px-2 text-center">Cloud / DevOps</th>
-                <th class="py-3 px-2 text-center">MS Excel / Sheets</th>
-                <th class="py-3 px-2 text-center">Video / Media</th>
-              </tr>
-            </thead>
-            <tbody id="heatmapBody" class="divide-y divide-slate-800/60 font-sans">
-              <!-- Rendered via JavaScript -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-
-    <!-- ========================================== -->
-    <!-- TAB 3: DEMAND & SKILL ANALYSIS CONTENT     -->
-    <!-- ========================================== -->
-    <section id="tabContent3" class="tab-content hidden space-y-6">
-
-      <!-- Top KPI Metric Cards (Tab 3) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Most Competitive Field -->
-        <div class="glass-card rounded-2xl p-5 border border-slate-800">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Most Competitive Field</span>
-            <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
-              <i class="fa-solid fa-fire-flame-curved"></i>
-            </div>
-          </div>
-          <div class="mt-3">
-            <div class="text-xl font-extrabold text-white truncate">AI & Machine Learning</div>
-            <p class="text-xs text-rose-300 flex items-center gap-1 mt-1">
-              <span>High Demand × 9.3 Skills Requirement</span>
-            </p>
-          </div>
-        </div>
-
-        <!-- Highest Compensation Field -->
-        <div class="glass-card rounded-2xl p-5 border border-slate-800">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Top Compensation Field</span>
-            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-              <i class="fa-solid fa-crown"></i>
-            </div>
-          </div>
-          <div class="mt-3">
-            <div class="text-xl font-extrabold text-white truncate">Cloud & DevOps / AI</div>
-            <p class="text-xs text-emerald-300 flex items-center gap-1 mt-1">
-              <span>525 - 550 THB/วัน (สูงสุด 700 THB)</span>
-            </p>
-          </div>
-        </div>
-
-        <!-- Skill Diversity Index -->
-        <div class="glass-card rounded-2xl p-5 border border-slate-800">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Skill Diversity Index</span>
-            <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
-              <i class="fa-solid fa-network-wired"></i>
-            </div>
-          </div>
-          <div class="mt-3">
-            <div class="text-xl font-extrabold text-white">8.4 / 10.0</div>
-            <p class="text-xs text-indigo-300 flex items-center gap-1 mt-1">
-              <span>ตลาดต้องการทักษะแบบ Multi-disciplinary สูง</span>
-            </p>
-          </div>
-        </div>
-
-        <!-- Remote Friendly Leader -->
-        <div class="glass-card rounded-2xl p-5 border border-slate-800">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Remote Leader</span>
-            <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
-              <i class="fa-solid fa-earth-asia"></i>
-            </div>
-          </div>
-          <div class="mt-3">
-            <div class="text-xl font-extrabold text-white truncate">Software Eng & DevOps</div>
-            <p class="text-xs text-cyan-300 flex items-center gap-1 mt-1">
-              <span>โอกาสทำงานแบบ Hybrid/Remote &gt; 85%</span>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Scatter Plot: Demand vs Compensation Matrix -->
-      <div class="glass-card rounded-2xl p-5 sm:p-6 border border-slate-800 flex flex-col">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-          <div>
-            <h2 class="text-base font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-chart-line text-indigo-400"></i>
-              <span>Demand vs. Compensation Matrix (Scatter / Bubble Plot)</span>
-            </h2>
-            <p class="text-xs text-slate-400">
-              แกน X: ปริมาณเปิดรับ (ตำแหน่ง) | แกน Y: เบี้ยเลี้ยงเฉลี่ย (บาท/วัน) | ขนาด Bubble: ความเข้มข้นของทักษะ (Skill Intensity)
-            </p>
-          </div>
-          <div class="flex flex-wrap items-center gap-2 text-xs">
-            <span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-              <span class="w-2 h-2 rounded-full bg-indigo-400"></span> Tech
-            </span>
-            <span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
-              <span class="w-2 h-2 rounded-full bg-purple-400"></span> Creative
-            </span>
-            <span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Business
-            </span>
-            <span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-              <span class="w-2 h-2 rounded-full bg-amber-400"></span> Operations
-            </span>
-          </div>
-        </div>
-
-        <div class="relative flex-1 min-h-[420px]">
-          <canvas id="chartScatterMatrix"></canvas>
-        </div>
-
-        <!-- 4 Quadrants Legend / Strategic Interpretation -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-800 text-xs">
-          <div class="p-3 rounded-xl bg-slate-900/80 border border-indigo-500/30">
-            <span class="font-bold text-indigo-400 block mb-1">⭐ Q1: High Demand • High Pay</span>
-            <p class="text-slate-400 text-[11px]">Software Eng, Cloud/DevOps, AI/ML ตำแหน่งงานเยอะ ค่าตอบแทนสูง ทักษะเฉพาะทางเข้มข้น</p>
-          </div>
-          <div class="p-3 rounded-xl bg-slate-900/80 border border-cyan-500/30">
-            <span class="font-bold text-cyan-400 block mb-1">🎯 Q2: High Demand • Standard Pay</span>
-            <p class="text-slate-400 text-[11px]">Digital Marketing, Graphic Design, Business Development รับจำนวนมาก โอกาสเริ่มงานง่าย</p>
-          </div>
-          <div class="p-3 rounded-xl bg-slate-900/80 border border-amber-500/30">
-            <span class="font-bold text-amber-400 block mb-1">💎 Q3: Niche Specialist • Premium Pay</span>
-            <p class="text-slate-400 text-[11px]">Cybersecurity, Product Manager, Legal & Compliance เปิดรับเฉพาะกลุ่ม แต่ค่าตอบแทนพรีเมียม</p>
-          </div>
-          <div class="p-3 rounded-xl bg-slate-900/80 border border-emerald-500/30">
-            <span class="font-bold text-emerald-400 block mb-1">🌱 Q4: Emerging & Operations</span>
-            <p class="text-slate-400 text-[11px]">HR, Supply Chain, Customer Success เสริมสร้างพื้นฐานงานองค์กร เน้นทักษะ Soft Skills</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Skill Intensity Index Chart & Career Cluster Breakdown -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Skill Intensity Index Bar Chart (7 Cols) -->
-        <div class="lg:col-span-7 glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <h2 class="text-base font-bold text-white flex items-center gap-2">
-                <i class="fa-solid fa-gauge-high text-pink-400"></i>
-                <span>Skill Intensity Index (จำนวนทักษะเฉลี่ยที่คาดหวังต่อตำแหน่ง)</span>
-              </h2>
-              <p class="text-xs text-slate-400">สายงานที่ต้องการชุดทักษะเข้มข้นที่สุด (Top demanding skill stacks)</p>
-            </div>
-            <span class="text-xs px-2.5 py-1 rounded-full bg-pink-500/20 text-pink-300 font-mono">
-              เกณฑ์: 0 - 10 Skills
-            </span>
-          </div>
-          <div class="relative flex-1 min-h-[360px]">
-            <canvas id="chartSkillIntensity"></canvas>
-          </div>
-        </div>
-
-        <!-- Career Cluster Breakdown Cards (5 Cols) -->
-        <div class="lg:col-span-5 glass-card rounded-2xl p-5 border border-slate-800 flex flex-col justify-between">
-          <div>
-            <h2 class="text-base font-bold text-white flex items-center gap-2 mb-1">
-              <i class="fa-solid fa-layer-group text-amber-400"></i>
-              <span>Hierarchical Cluster Breakdown</span>
-            </h2>
-            <p class="text-xs text-slate-400 mb-4">การกระจายตัวของ 4 กลุ่มอุตสาหกรรมหลัก</p>
-
-            <div class="space-y-3">
-              <!-- Cluster 1 -->
-              <div class="p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/30 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">
-                    <i class="fa-solid fa-laptop-code"></i>
-                  </div>
-                  <div>
-                    <h4 class="text-xs font-bold text-white">Technology & Software</h4>
-                    <p class="text-[11px] text-slate-400">Software, Data, Cloud, AI, Cyber, QA</p>
-                  </div>
+          <!-- 4 Visual Charts Grid (Cyberpunk Dark Aesthetics) -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Chart 1: Positions Rank (Horizontal Bar) -->
+            <div class="cyber-card p-5 flex flex-col">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-neon-cyan"></span>
+                    สัดส่วนจำนวนเปิดรับแยกตาม 20 สายงาน (Positions Rank)
+                  </h3>
+                  <p class="text-[11px] text-slate-400 mt-0.5">เรียงลำดับความต้องการจากมากไปน้อย</p>
                 </div>
-                <div class="text-right">
-                  <span id="clusterTechPositions" class="text-xs font-bold text-indigo-300 block">1,830 ตำแหน่ง</span>
-                  <span id="clusterTechShare" class="text-[10px] text-slate-400">43.8% สัดส่วน</span>
+                <span class="text-[10px] text-cyan-400 bg-cyan-500/10 px-2 py-1 rounded-md border border-cyan-500/20 font-mono">TOP 20</span>
+              </div>
+              <div class="h-80 w-full relative">
+                <canvas id="chartPositionsRank"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart 2: Work Format (Donut) -->
+            <div class="cyber-card p-5 flex flex-col">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-neon-pink"></span>
+                    สัดส่วนรูปแบบการทำงาน (Work Arrangement)
+                  </h3>
+                  <p class="text-[11px] text-slate-400 mt-0.5">การกระจายตัวของ Hybrid, On-site และ Remote</p>
                 </div>
+                <span class="text-[10px] text-pink-400 bg-pink-500/10 px-2 py-1 rounded-md border border-pink-500/20 font-mono">DONUT</span>
+              </div>
+              <div class="h-80 w-full relative flex items-center justify-center">
+                <canvas id="chartWorkFormat"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart 3: Regional Distribution (Bar) -->
+            <div class="cyber-card p-5 flex flex-col">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-neon-purple"></span>
+                    การกระจายตัวของตำแหน่งฝึกงานตามภูมิภาค (Geographic Distribution)
+                  </h3>
+                  <p class="text-[11px] text-slate-400 mt-0.5">สัดส่วนในหัวเมืองเศรษฐกิจและพื้นที่นิคม EEC</p>
+                </div>
+                <span class="text-[10px] text-purple-400 bg-purple-500/10 px-2 py-1 rounded-md border border-purple-500/20 font-mono">REGIONAL</span>
+              </div>
+              <div class="h-80 w-full relative">
+                <canvas id="chartRegions"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart 4: Allowance Range (Bar with Daily/Monthly Toggle) -->
+            <div class="cyber-card p-5 flex flex-col">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 id="stipendChartTitle" class="text-sm font-bold text-slate-100 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-neon-amber"></span>
+                    เปรียบเทียบช่วงเบี้ยเลี้ยงฝึกงาน (รายวัน)
+                  </h3>
+                  <p class="text-[11px] text-slate-400 mt-0.5">อัตราต่ำสุด - ค่าเฉลี่ย - อัตราสูงสุดตามสายงาน</p>
+                </div>
+                <button id="btnToggleStipendMode" onclick="toggleStipendChartMode()" class="px-2.5 py-1 rounded-lg bg-cyber-surface hover:bg-slate-800 text-amber-300 border border-amber-500/30 text-xs font-semibold transition flex items-center gap-1.5">
+                  <i class="fa-solid fa-arrows-rotate"></i>
+                  <span>สลับดูรายเดือน</span>
+                </button>
+              </div>
+              <div class="h-80 w-full relative">
+                <canvas id="chartStipendRange"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Interactive Live Editable Data Grid (Cyber Table) -->
+          <div id="liveGridSection" class="cyber-card p-5 space-y-4">
+            
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                  <i class="fa-solid fa-table text-neon-cyan"></i>
+                  ตารางฐานข้อมูลฝึกงานแบบโต้ตอบ (Interactive Live Data Grid)
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">
+                  <span class="text-cyan-300 font-semibold"><i class="fa-regular fa-pen-to-square"></i> คลิกแก้ไขตัวเลขในตารางได้ทันที</span> — ระบบจะคำนวณ KPI และอัปเดตกราฟทั้งหมดแบบเรียลไทม์
+                </p>
               </div>
 
-              <!-- Cluster 2 -->
-              <div class="p-3 rounded-xl bg-purple-950/40 border border-purple-500/30 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                  </div>
-                  <div>
-                    <h4 class="text-xs font-bold text-white">Creative & Design</h4>
-                    <p class="text-[11px] text-slate-400">UI/UX, Graphic Design, Video & Media</p>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <span id="clusterCreativePositions" class="text-xs font-bold text-purple-300 block">750 ตำแหน่ง</span>
-                  <span id="clusterCreativeShare" class="text-[10px] text-slate-400">17.9% สัดส่วน</span>
-                </div>
+              <!-- Quick Cluster Pill Filter Buttons (As in Mockup!) -->
+              <div class="flex items-center flex-wrap gap-1.5">
+                <button id="pillCluster_ALL" onclick="setClusterFilter('ALL')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950 transition shadow-sm">
+                  ทั้งหมด <span id="countCluster_ALL" class="ml-1 opacity-80">(20)</span>
+                </button>
+                <button id="pillCluster_Technology" onclick="setClusterFilter('Technology')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-cyber-surface hover:bg-slate-800 text-slate-300 border border-cyber-border transition">
+                  Technology <span id="countCluster_Tech" class="ml-1 opacity-70">(6)</span>
+                </button>
+                <button id="pillCluster_Creative" onclick="setClusterFilter('Creative')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-cyber-surface hover:bg-slate-800 text-slate-300 border border-cyber-border transition">
+                  Creative <span id="countCluster_Creative" class="ml-1 opacity-70">(3)</span>
+                </button>
+                <button id="pillCluster_Business" onclick="setClusterFilter('Business')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-cyber-surface hover:bg-slate-800 text-slate-300 border border-cyber-border transition">
+                  Business <span id="countCluster_Business" class="ml-1 opacity-70">(7)</span>
+                </button>
+                <button id="pillCluster_Operations" onclick="setClusterFilter('Operations')" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-cyber-surface hover:bg-slate-800 text-slate-300 border border-cyber-border transition">
+                  Operations <span id="countCluster_Ops" class="ml-1 opacity-70">(4)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Table Filter Toolbar -->
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-2">
+              <div class="sm:col-span-5 relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+                <input 
+                  id="tableSearchInput" 
+                  type="text" 
+                  placeholder="ค้นหาชื่อสายงาน, ทักษะ, บริษัทผู้จ้าง..." 
+                  class="w-full pl-9 pr-3 py-2 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 placeholder-slate-400 text-xs focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan transition"
+                >
               </div>
 
-              <!-- Cluster 3 -->
-              <div class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
-                    <i class="fa-solid fa-briefcase"></i>
-                  </div>
-                  <div>
-                    <h4 class="text-xs font-bold text-white">Business & Marketing</h4>
-                    <p class="text-[11px] text-slate-400">Marketing, Sales, Finance, PM, E-Com</p>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <span id="clusterBizPositions" class="text-xs font-bold text-emerald-300 block">1,070 ตำแหน่ง</span>
-                  <span id="clusterBizShare" class="text-[10px] text-slate-400">25.6% สัดส่วน</span>
-                </div>
+              <div class="sm:col-span-3">
+                <select id="filterCluster" class="w-full py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 text-xs focus:outline-none focus:border-neon-cyan transition">
+                  <option value="ALL">กลุ่มสายงาน: ทั้งหมด</option>
+                  <option value="Technology">Technology</option>
+                  <option value="Creative">Creative</option>
+                  <option value="Business">Business</option>
+                  <option value="Operations">Operations</option>
+                </select>
               </div>
 
-              <!-- Cluster 4 -->
-              <div class="p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
-                    <i class="fa-solid fa-gears"></i>
-                  </div>
-                  <div>
-                    <h4 class="text-xs font-bold text-white">Operations & Engineering</h4>
-                    <p class="text-[11px] text-slate-400">HR, Logistics, Legal, Support, Industrial</p>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <span id="clusterOpsPositions" class="text-xs font-bold text-amber-300 block">530 ตำแหน่ง</span>
-                  <span id="clusterOpsShare" class="text-[10px] text-slate-400">12.7% สัดส่วน</span>
-                </div>
+              <div class="sm:col-span-2">
+                <select id="filterFormat" class="w-full py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 text-xs focus:outline-none focus:border-neon-cyan transition">
+                  <option value="ALL">รูปแบบ: ทั้งหมด</option>
+                  <option value="HYBRID_DOMINANT">Hybrid เด่น (>45%)</option>
+                  <option value="REMOTE_HIGH">Remote สูง (>15%)</option>
+                  <option value="ONSITE_HIGH">On-site สูง (>45%)</option>
+                </select>
+              </div>
+
+              <div class="sm:col-span-2 flex items-center justify-end gap-2">
+                <span class="text-[11px] text-slate-400">แสดง:</span>
+                <select id="pageSizeSelect" onchange="changePageSize(this.value)" class="py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 text-xs focus:outline-none focus:border-neon-cyan transition">
+                  <option value="10">10 แถว</option>
+                  <option value="20" selected>20 แถว</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Responsive Table Container -->
+            <div class="overflow-x-auto rounded-xl border border-cyber-border/80">
+              <table id="internshipDataTable" class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="bg-cyber-surface text-slate-300 border-b border-cyber-border select-none">
+                    <th onclick="sortTable('id')" class="py-3 px-3.5 cursor-pointer hover:text-cyan-300 font-bold transition">
+                      # <span id="sortIcon_id"><i class="fa-solid fa-sort text-[10px] text-slate-400"></i></span>
+                    </th>
+                    <th onclick="sortTable('category')" class="py-3 px-4 cursor-pointer hover:text-cyan-300 font-bold transition">
+                      กลุ่มสายงาน (Job Category) <span id="sortIcon_category"><i class="fa-solid fa-sort text-[10px] text-slate-400"></i></span>
+                    </th>
+                    <th onclick="sortTable('cluster')" class="py-3 px-3 cursor-pointer hover:text-cyan-300 font-bold transition">
+                      กลุ่มคลัสเตอร์ <span id="sortIcon_cluster"><i class="fa-solid fa-sort text-[10px] text-slate-400"></i></span>
+                    </th>
+                    <th onclick="sortTable('positions')" class="py-3 px-3 cursor-pointer hover:text-cyan-300 font-bold transition text-right">
+                      ตำแหน่ง (แก้ไขได้) <span id="sortIcon_positions"><i class="fa-solid fa-sort text-[10px] text-slate-400"></i></span>
+                    </th>
+                    <th onclick="sortTable('percentage')" class="py-3 px-3 cursor-pointer hover:text-cyan-300 font-bold transition text-right">
+                      สัดส่วน <span id="sortIcon_percentage"><i class="fa-solid fa-sort text-[10px] text-slate-400"></i></span>
+                    </th>
+                    <th onclick="sortTable('stipend_daily_avg')" class="py-3 px-3 cursor-pointer hover:text-cyan-300 font-bold transition text-right">
+                      เบี้ยเลี้ยงเฉลี่ย (แก้ไขได้) <span id="sortIcon_stipend_daily_avg"><i class="fa-solid fa-sort text-[10px] text-slate-400"></i></span>
+                    </th>
+                    <th class="py-3 px-3 font-bold">รูปแบบงาน</th>
+                    <th class="py-3 px-3 font-bold">ทักษะสำคัญ</th>
+                    <th class="py-3 px-3 font-bold text-center">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody id="tableBody" class="divide-y divide-cyber-border/40 text-slate-300">
+                  <!-- Dynamic rows generated by JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Table Pagination Bar -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs text-slate-400">
+              <div id="tableInfoText">กำลังแสดง 1-20 จาก 20 รายการ</div>
+              <div class="flex items-center gap-1.5">
+                <button id="btnPrevPage" onclick="prevPage()" class="px-3 py-1.5 rounded-lg bg-cyber-surface hover:bg-slate-800 text-slate-300 border border-cyber-border disabled:opacity-40 disabled:cursor-not-allowed transition">
+                  <i class="fa-solid fa-chevron-left text-[10px]"></i> ก่อนหน้า
+                </button>
+                <span id="pageIndicator" class="px-3 py-1 font-mono font-bold text-cyan-300">หน้า 1 / 1</span>
+                <button id="btnNextPage" onclick="nextPage()" class="px-3 py-1.5 rounded-lg bg-cyber-surface hover:bg-slate-800 text-slate-300 border border-cyber-border disabled:opacity-40 disabled:cursor-not-allowed transition">
+                  ถัดไป <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- TAB 2: SKILLS & MARKET REQUIREMENTS                            -->
+        <!-- ============================================================== -->
+        <div id="tabContent2" class="tab-content hidden space-y-6">
+
+          <!-- Tab 2 Top KPI Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div class="cyber-card p-5 border-neon-cyan/30">
+              <div class="text-[11px] uppercase font-bold text-cyan-400 tracking-wider mb-1">Top Hard Skill ทั่วประเทศ</div>
+              <div class="text-2xl font-black text-white">JavaScript / TypeScript</div>
+              <div class="text-xs text-slate-400 mt-1">ระบุใน 78% ของตำแหน่งงานสายเทค & ซอฟต์แวร์</div>
+            </div>
+
+            <div class="cyber-card p-5 border-neon-pink/30">
+              <div class="text-[11px] uppercase font-bold text-pink-400 tracking-wider mb-1">Top Soft Skill ยอดนิยม</div>
+              <div class="text-2xl font-black text-white">Problem Solving & Logic</div>
+              <div class="text-xs text-slate-400 mt-1">นายจ้าง 85% คาดหวังในทุกกลุ่มสายงาน</div>
+            </div>
+
+            <div class="cyber-card p-5 border-neon-purple/30">
+              <div class="text-[11px] uppercase font-bold text-purple-400 tracking-wider mb-1">Top Tool & Platform</div>
+              <div class="text-2xl font-black text-white">Git / GitHub & Figma</div>
+              <div class="text-xs text-slate-400 mt-1">เครื่องมือพื้นฐานที่จำเป็นต่อการทำงานร่วมกัน</div>
+            </div>
+          </div>
+
+          <!-- Controls Bar: Category Selector & Compare Mode -->
+          <div class="cyber-card p-5 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3 flex-1">
+              <label class="text-xs font-bold text-slate-300 shrink-0">เลือกกลุ่มสายงาน:</label>
+              <select id="skillCategorySelect" onchange="updateSkillCharts()" class="py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 text-xs focus:outline-none focus:border-neon-cyan transition flex-1 max-w-md">
+                <option value="ALL">ทุกสายงานรวมกัน (ภาพรวมตลาด)</option>
+              </select>
+            </div>
+
+            <!-- Compare Mode Toggle -->
+            <div class="flex items-center gap-3">
+              <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-semibold text-cyan-300">
+                <input id="chkCompareMode" type="checkbox" onchange="toggleCompareMode()" class="rounded bg-cyber-surface border-cyber-border text-cyan-500 focus:ring-0">
+                <span>เปรียบเทียบ 2 สายงาน</span>
+              </label>
+
+              <div id="compareSelectContainer" class="hidden">
+                <select id="skillCompareSelect" onchange="updateSkillCharts()" class="py-2 px-3 rounded-xl bg-cyber-surface border border-pink-500/40 text-pink-300 text-xs focus:outline-none focus:border-neon-pink transition">
+                  <!-- Populated by JS -->
+                </select>
               </div>
             </div>
           </div>
 
-          <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-slate-400">
-            💡 ข้อมูลสรุปเชิงโครงสร้างจัดกลุ่มตามบทบาทหลักและมาตรฐานอุตสาหกรรม
-          </div>
-        </div>
-      </div>
+          <!-- Charts: Hard Skills Bar & Soft Skills Radar -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Hard Skills (7 cols) -->
+            <div class="cyber-card p-5 lg:col-span-7 flex flex-col">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 id="hardSkillTitle" class="text-sm font-bold text-slate-100 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-neon-cyan"></span>
+                    10 อันดับทักษะทางเทคนิคที่ต้องการสูงสุด (Top Hard Skills)
+                  </h3>
+                  <p class="text-[11px] text-slate-400 mt-0.5">ความถี่ของทักษะที่นายจ้างระบุในประกาศรับสมัคร</p>
+                </div>
+              </div>
+              <div class="h-80 w-full relative">
+                <canvas id="chartHardSkills"></canvas>
+              </div>
+            </div>
 
-      <!-- Tab 3 Interactive Feature: Internship ROI & Skill Match Calculator -->
-      <div class="glass-card rounded-2xl p-5 sm:p-6 border border-slate-800 space-y-4">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-            <i class="fa-solid fa-calculator"></i>
-          </div>
-          <div>
-            <h2 class="text-base font-bold text-white">เครื่องมือประเมินความพร้อมและคำนวณความคุ้มค่า (Internship ROI & Skill Match Calculator)</h2>
-            <p class="text-xs text-slate-400">สำหรับนิสิต/นักศึกษา: ทดสอบประเมินโอกาสและเทียบระดับผลตอบแทนกับความพร้อมทางทักษะของคุณ</p>
-          </div>
-        </div>
+            <!-- Soft Skills Radar (5 cols) -->
+            <div class="cyber-card p-5 lg:col-span-5 flex flex-col">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-neon-pink"></span>
+                    เรดาร์สมรรถนะ Soft Skills (Competency Radar)
+                  </h3>
+                  <p class="text-[11px] text-slate-400 mt-0.5">ระดับความสำคัญใน 6 มิติหลัก</p>
+                </div>
+              </div>
+              <div class="h-80 w-full relative flex items-center justify-center">
+                <canvas id="chartSoftSkillsRadar"></canvas>
+              </div>
+            </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-          <!-- Input 1: Target Category -->
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">1. เลือกสายงานเป้าหมาย:</label>
-            <select id="calcCategorySelect" onchange="runRoiCalculation()" class="w-full py-2 px-3 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
-              <!-- Dynamically populated -->
-            </select>
           </div>
 
-          <!-- Input 2: Expected Allowance -->
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">2. เบี้ยเลี้ยงที่คาดหวัง (บาท/วัน):</label>
-            <div class="flex items-center gap-2">
-              <input type="number" id="calcStipendInput" value="450" min="200" max="1500" step="50" oninput="runRoiCalculation()" class="w-full py-2 px-3 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
-              <span class="text-xs text-slate-400 whitespace-nowrap">THB / วัน</span>
+          <!-- Tools & Software Tag Cloud -->
+          <div class="cyber-card p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2">
+                  <i class="fa-solid fa-tags text-neon-purple"></i>
+                  กลุ่มเครื่องมือและซอฟต์แวร์ยอดนิยม (Tools & Technologies Cloud)
+                </h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">คลิกที่แท็กเพื่อกรองตารางข้อมูลใน Tab 1</p>
+              </div>
+            </div>
+            <div id="toolsCloudContainer" class="flex flex-wrap gap-2 pt-2">
+              <!-- Populated by JS -->
             </div>
           </div>
 
-          <!-- Input 3: Skills Checked -->
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">3. ทักษะที่มีแล้วในปัจจุบัน:</label>
-            <div id="calcSkillsCheckboxes" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-2 rounded-lg bg-slate-900 border border-slate-800">
-              <!-- Populated dynamically -->
+          <!-- Skill Heatmap Matrix Table -->
+          <div class="cyber-card p-5 space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                  <i class="fa-solid fa-border-all text-neon-cyan"></i>
+                  แมทริกซ์ความเข้มข้นของทักษะ 20 สายงาน (Skill Heatmap Matrix)
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">
+                  ความสัมพันธ์ระหว่าง 20 กลุ่มสายงาน (แนวตั้ง) กับ 10 ทักษะ/เครื่องมือสำคัญ (แนวนอน) ระดับความสว่างแสดงถึงความต้องการ
+                </p>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-xl border border-cyber-border/80">
+              <table id="heatmapTable" class="w-full text-center border-collapse text-xs">
+                <thead>
+                  <tr class="bg-cyber-surface text-slate-300 border-b border-cyber-border">
+                    <th class="py-3 px-4 text-left font-bold min-w-[200px]">กลุ่มสายงาน (Category)</th>
+                    <!-- 10 skill headers generated by JS -->
+                  </tr>
+                </thead>
+                <tbody id="heatmapBody" class="divide-y divide-cyber-border/40">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
             </div>
           </div>
+
         </div>
 
-        <!-- Calculator Result Box -->
-        <div id="calcResultBox" class="mt-4 p-4 rounded-xl bg-slate-900/90 border border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-          <div class="p-2">
-            <span class="text-[11px] text-slate-400 block">Skill Readiness Match</span>
-            <span id="calcResultMatch" class="text-2xl font-extrabold text-indigo-400">80%</span>
-            <p id="calcResultMatchDesc" class="text-[10px] text-slate-400">พร้อมสำหรับงานส่วนใหญ่</p>
+        <!-- ============================================================== -->
+        <!-- TAB 3: DEMAND & SKILL ANALYSIS (SCATTER & ROI CALCULATOR)      -->
+        <!-- ============================================================== -->
+        <div id="tabContent3" class="tab-content hidden space-y-6">
+
+          <!-- 4 Strategic Quadrant KPI Badges -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="cyber-card p-4 border-l-4 border-l-cyan-400">
+              <div class="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">Quadrant 1: Star Growth</div>
+              <div class="text-sm font-bold text-white mt-1">High Demand • High Pay</div>
+              <div class="text-xs text-slate-400 mt-0.5">Software Eng, AI & ML, Cloud DevOps</div>
+            </div>
+
+            <div class="cyber-card p-4 border-l-4 border-l-purple-400">
+              <div class="text-[10px] font-bold text-purple-400 uppercase tracking-wider">Quadrant 2: Volume Engine</div>
+              <div class="text-sm font-bold text-white mt-1">High Demand • Standard Pay</div>
+              <div class="text-xs text-slate-400 mt-0.5">Digital Marketing, Graphic Design, BD</div>
+            </div>
+
+            <div class="cyber-card p-4 border-l-4 border-l-pink-400">
+              <div class="text-[10px] font-bold text-pink-400 uppercase tracking-wider">Quadrant 3: Niche Specialist</div>
+              <div class="text-sm font-bold text-white mt-1">Moderate Demand • Premium Pay</div>
+              <div class="text-xs text-slate-400 mt-0.5">Cybersecurity, Product Manager, Legal</div>
+            </div>
+
+            <div class="cyber-card p-4 border-l-4 border-l-amber-400">
+              <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Quadrant 4: Core Operations</div>
+              <div class="text-sm font-bold text-white mt-1">Standard Demand • Standard Pay</div>
+              <div class="text-xs text-slate-400 mt-0.5">HR & Talent, Logistics, Accounting</div>
+            </div>
           </div>
-          <div class="p-2 border-y sm:border-y-0 sm:border-x border-slate-800">
-            <span class="text-[11px] text-slate-400 block">เทียบกับค่าเฉลี่ยตลาด</span>
-            <span id="calcResultStipendDiff" class="text-2xl font-extrabold text-emerald-400">+7.6%</span>
-            <p id="calcResultStipendDesc" class="text-[10px] text-slate-400">สูงกว่าค่าเฉลี่ยสายงานเล็กน้อย</p>
+
+          <!-- Scatter / Bubble Matrix Chart -->
+          <div class="cyber-card p-5 flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-neon-cyan"></span>
+                  เมทริกซ์วิเคราะห์ความคุ้มค่า (Demand vs. Stipend vs. Skill Intensity)
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">
+                  แกน X: ปริมาณตำแหน่งเปิดรับ | แกน Y: ค่าเฉลี่ยเบี้ยเลี้ยงรายวัน (บาท) | ขนาด Bubble: ดัชนีความเข้มข้นของทักษะ (Skill Intensity Index)
+                </p>
+              </div>
+            </div>
+            <div class="h-96 w-full relative">
+              <canvas id="chartScatterMatrix"></canvas>
+            </div>
           </div>
-          <div class="p-2">
-            <span class="text-[11px] text-slate-400 block">Strategic Quadrant</span>
-            <span id="calcResultQuadrant" class="text-sm font-bold text-amber-400 block mt-1">⭐ Q1: High Demand • High Pay</span>
-            <p id="calcResultAction" class="text-[10px] text-slate-400 mt-1">แนะนำ: พัฒนา Portfolio เพิ่มเติม</p>
+
+          <!-- Cluster Summary Cards & Skill Intensity Bar -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Skill Intensity Bar (7 cols) -->
+            <div class="cyber-card p-5 lg:col-span-7 flex flex-col">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-neon-purple"></span>
+                    ดัชนีความเข้มข้นของทักษะตามสายงาน (Skill Intensity Index)
+                  </h3>
+                  <p class="text-[11px] text-slate-400 mt-0.5">คะแนนความซับซ้อนและความรู้หลากหลายที่ต้องมี (เต็ม 10.0)</p>
+                </div>
+              </div>
+              <div class="h-80 w-full relative">
+                <canvas id="chartSkillIntensity"></canvas>
+              </div>
+            </div>
+
+            <!-- Cluster Aggregation Cards (5 cols) -->
+            <div class="cyber-card p-5 lg:col-span-5 flex flex-col justify-between space-y-3">
+              <div>
+                <h3 class="text-sm font-bold text-slate-100 mb-1">สัดส่วนตามกลุ่มคลัสเตอร์ (Career Clusters)</h3>
+                <p class="text-[11px] text-slate-400 mb-3">สรุปตำแหน่งงานและส่วนแบ่งตลาดใน 4 เสาหลัก</p>
+              </div>
+
+              <!-- Tech -->
+              <div class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-between">
+                <div>
+                  <div class="text-xs font-bold text-cyan-300">Technology & Data</div>
+                  <div class="text-[10px] text-slate-400">Software, Data, AI, Cloud, Cyber, QA</div>
+                </div>
+                <div class="text-right">
+                  <div id="clusterTechPositions" class="text-sm font-black text-white">1,780 อัตรา</div>
+                  <div id="clusterTechShare" class="text-[10px] text-cyan-400 font-bold">42.6% ของตลาด</div>
+                </div>
+              </div>
+
+              <!-- Business -->
+              <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-between">
+                <div>
+                  <div class="text-xs font-bold text-purple-300">Business & Growth</div>
+                  <div class="text-[10px] text-slate-400">Marketing, Sales, Finance, Product, PM</div>
+                </div>
+                <div class="text-right">
+                  <div id="clusterBizPositions" class="text-sm font-black text-white">1,260 อัตรา</div>
+                  <div id="clusterBizShare" class="text-[10px] text-purple-400 font-bold">30.1% ของตลาด</div>
+                </div>
+              </div>
+
+              <!-- Creative -->
+              <div class="p-3 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-between">
+                <div>
+                  <div class="text-xs font-bold text-pink-300">Creative & Design</div>
+                  <div class="text-[10px] text-slate-400">UI/UX, Graphic, Content Creator</div>
+                </div>
+                <div class="text-right">
+                  <div id="clusterCreativePositions" class="text-sm font-black text-white">620 อัตรา</div>
+                  <div id="clusterCreativeShare" class="text-[10px] text-pink-400 font-bold">14.8% ของตลาด</div>
+                </div>
+              </div>
+
+              <!-- Operations -->
+              <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between">
+                <div>
+                  <div class="text-xs font-bold text-amber-300">Operations & Support</div>
+                  <div class="text-[10px] text-slate-400">HR, Logistics, Customer Care, Legal</div>
+                </div>
+                <div class="text-right">
+                  <div id="clusterOpsPositions" class="text-sm font-black text-white">520 อัตรา</div>
+                  <div id="clusterOpsShare" class="text-[10px] text-amber-400 font-bold">12.4% ของตลาด</div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Student Career & Allowance ROI Calculator -->
+          <div class="cyber-card p-6 space-y-5 border-neon-cyan/40">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-cyber-border/80 pb-4">
+              <div>
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                  <i class="fa-solid fa-calculator text-neon-cyan"></i>
+                  โปรแกรมคำนวณความพร้อมและผลตอบแทนฝึกงาน (Student Career & ROI Calculator)
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">
+                  เลือกเป้าหมายสายงาน กรอกเบี้ยเลี้ยงที่คาดหวัง และเช็คทักษะที่มี เพื่อคำนวณ Skill Readiness Match % และผลตอบแทนเปรียบเทียบตลาด
+                </p>
+              </div>
+              <span class="text-xs font-semibold px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shrink-0">
+                AI Readiness Engine
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              
+              <!-- Input Form (7 cols) -->
+              <div class="lg:col-span-7 space-y-4">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">สายงานเป้าหมาย:</label>
+                    <select id="calcCategorySelect" onchange="updateCalculatorSkills()" class="w-full py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 text-xs focus:outline-none focus:border-neon-cyan transition">
+                      <!-- Populated by JS -->
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5">เบี้ยเลี้ยงที่คาดหวัง (บาท/วัน):</label>
+                    <input id="calcStipendInput" type="number" value="450" min="200" max="1000" step="25" oninput="runRoiCalculation()" class="w-full py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 text-xs focus:outline-none focus:border-neon-cyan transition">
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-1.5">ทักษะที่คุณมีในปัจจุบัน (เลือกทั้งหมดที่มี):</label>
+                  <div id="calcSkillsCheckboxes" class="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 rounded-xl bg-cyber-surface border border-cyber-border/80 max-h-48 overflow-y-auto">
+                    <!-- Checkboxes generated by JS -->
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Result Display (5 cols) -->
+              <div class="lg:col-span-5">
+                <div id="calcResultBox" class="h-full cyber-card p-5 flex flex-col justify-between border-cyan-500/40 bg-gradient-to-br from-cyber-card to-[#151c4a]">
+                  
+                  <div>
+                    <div class="flex items-center justify-between mb-3">
+                      <span class="text-[11px] uppercase font-bold text-cyan-400">ผลการประเมินความพร้อม</span>
+                      <span id="calcResultQuadrant" class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">Q1: High Demand</span>
+                    </div>
+
+                    <div class="flex items-baseline gap-3 mb-2">
+                      <div id="calcResultMatch" class="text-4xl font-black text-cyan-300">0%</div>
+                      <div id="calcResultMatchDesc" class="text-xs font-semibold text-slate-300">Skill Match Level</div>
+                    </div>
+
+                    <div class="space-y-2 pt-2 border-t border-cyber-border/80 text-xs">
+                      <div class="flex justify-between">
+                        <span class="text-slate-400">เปรียบเทียบเบี้ยเลี้ยงตลาด:</span>
+                        <span id="calcResultStipendDiff" class="font-bold text-white">0%</span>
+                      </div>
+                      <p id="calcResultStipendDesc" class="text-[11px] text-slate-400">...</p>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 pt-3 border-t border-cyber-border/80">
+                    <div class="text-[11px] font-bold text-slate-300 mb-1">กลยุทธ์แนะนำสำหรับคุณ:</div>
+                    <p id="calcResultAction" class="text-xs text-cyan-200">
+                      กำลังคำนวณข้อมูล...
+                    </p>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="mt-auto border-t border-cyber-border/80 py-6 px-4 lg:px-8 text-center text-xs text-slate-400 bg-cyber-surface">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 max-w-7xl mx-auto">
+          <div>
+            <span class="font-bold text-slate-300">Thailand Internship Open Data 2026</span> • Single-File Interactive Dashboard
+          </div>
+          <div class="flex items-center gap-4 text-[11px]">
+            <a href="https://github.com/kanokwantho/dasboard_by_666" target="_blank" class="hover:text-cyan-300 transition">GitHub Repo</a>
+            <span>•</span>
+            <a href="https://kanokwantho.github.io/dasboard_by_666/" target="_blank" class="hover:text-cyan-300 transition">Live Demo</a>
+            <span>•</span>
+            <span>MIT License</span>
           </div>
         </div>
-      </div>
-    </section>
+      </footer>
 
-  </main>
-
-  <!-- ============================================================== -->
-  <!-- MODAL 1: VIEW DETAILS & REPRESENTATIVE COMPANIES (RAW DATA)    -->
-  <!-- ============================================================== -->
-  <div id="detailModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="glass-card rounded-2xl border border-slate-700 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
-      <!-- Close button -->
-      <button onclick="closeDetailModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition">
-        <i class="fa-solid fa-xmark text-sm"></i>
-      </button>
-
-      <div class="flex items-center gap-3 mb-4">
-        <div id="modalClusterIcon" class="w-12 h-12 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl font-bold">
-          <i class="fa-solid fa-briefcase"></i>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h3 id="modalCategoryTitle" class="text-lg font-bold text-white">Software Engineering</h3>
-            <span id="modalClusterBadge" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Technology</span>
-          </div>
-          <p id="modalCategorySubtitle" class="text-xs text-slate-400">สถิติและข้อมูลเชิงลึกการเปิดรับเด็กฝึกงาน</p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4 text-center">
-        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
-          <span class="text-[10px] text-slate-400 block">เปิดรับทั้งหมด</span>
-          <span id="modalPositions" class="text-base font-extrabold text-indigo-300">600 ตำแหน่ง</span>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
-          <span class="text-[10px] text-slate-400 block">บริษัทที่เปิดรับ</span>
-          <span id="modalCompanies" class="text-base font-extrabold text-white">185 แห่ง</span>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
-          <span class="text-[10px] text-slate-400 block">เบี้ยเลี้ยงเฉลี่ย</span>
-          <span id="modalStipendAvg" class="text-base font-extrabold text-emerald-400">475 บาท/วัน</span>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
-          <span class="text-[10px] text-slate-400 block">ประมาณการรายเดือน</span>
-          <span id="modalStipendMonthly" class="text-xs font-bold text-slate-300 block mt-1">8,000-15,000</span>
-        </div>
-      </div>
-
-      <!-- Sample Representative Companies -->
-      <div class="mt-4">
-        <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5 mb-2">
-          <i class="fa-solid fa-building-circle-check text-cyan-400"></i>
-          <span>ตัวอย่างบริษัทชั้นนำที่เปิดรับเด็กฝึกงานในสายงานนี้ (Sample Employers):</span>
-        </h4>
-        <div id="modalEmployersList" class="flex flex-wrap gap-1.5">
-          <!-- Injected via JS -->
-        </div>
-      </div>
-
-      <!-- Required Hard Skills -->
-      <div class="mt-4">
-        <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5 mb-2">
-          <i class="fa-solid fa-code text-indigo-400"></i>
-          <span>ทักษะทางเทคนิค (Hard Skills Required):</span>
-        </h4>
-        <div id="modalHardSkillsList" class="flex flex-wrap gap-1.5">
-          <!-- Injected via JS -->
-        </div>
-      </div>
-
-      <!-- Soft Skills & Tools -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-        <div>
-          <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5 mb-2">
-            <i class="fa-solid fa-lightbulb text-pink-400"></i>
-            <span>Soft Skills:</span>
-          </h4>
-          <div id="modalSoftSkillsList" class="flex flex-wrap gap-1.5"></div>
-        </div>
-        <div>
-          <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5 mb-2">
-            <i class="fa-solid fa-wrench text-amber-400"></i>
-            <span>Tools & Software:</span>
-          </h4>
-          <div id="modalToolsList" class="flex flex-wrap gap-1.5"></div>
-        </div>
-      </div>
-
-      <!-- Work Locations & Format -->
-      <div class="mt-4 p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-xs flex flex-col sm:flex-row justify-between gap-2">
-        <div>
-          <span class="text-slate-400">จังหวัด/ศูนย์กลาง: </span>
-          <span id="modalLocations" class="text-white font-medium">กรุงเทพฯ, เชียงใหม่</span>
-        </div>
-        <div>
-          <span class="text-slate-400">สัดส่วนทำงาน: </span>
-          <span id="modalWorkFormat" class="text-white font-medium">Onsite 15% | Hybrid 60% | Remote 25%</span>
-        </div>
-      </div>
     </div>
   </div>
 
   <!-- ============================================================== -->
-  <!-- MODAL 2: ADD NEW CATEGORY / POSITION ENTRY                     -->
+  <!-- MODAL 1: COMPANY DETAIL MODAL                                  -->
   <!-- ============================================================== -->
-  <div id="addEntryModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="glass-card rounded-2xl border border-slate-700 max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
-      <!-- Close button -->
-      <button onclick="closeAddEntryModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition">
-        <i class="fa-solid fa-xmark text-sm"></i>
-      </button>
-
-      <div class="flex items-center gap-2 mb-4">
-        <div class="w-10 h-10 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold">
-          <i class="fa-solid fa-plus"></i>
-        </div>
+  <div id="detailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
+    <div class="cyber-card w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 space-y-5 border-cyan-500/40 glow-cyan">
+      
+      <div class="flex items-start justify-between border-b border-cyber-border pb-4">
         <div>
-          <h3 class="text-lg font-bold text-white">เพิ่มข้อมูลสายงานฝึกงานใหม่</h3>
-          <p class="text-xs text-slate-400">กรอกข้อมูลเพื่อผนวกเข้ากับสถิติและคำนวณกราฟแบบ Real-time</p>
+          <div class="flex items-center gap-2">
+            <span id="modalClusterIcon" class="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-code"></i>
+            </span>
+            <h3 id="modalCategoryTitle" class="text-lg font-black text-white">Software Engineering</h3>
+            <span id="modalClusterBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">Technology</span>
+          </div>
+          <p id="modalCategorySubtitle" class="text-xs text-slate-400 mt-1">รายละเอียดเจาะลึกและบริษัทตัวอย่างที่เปิดรับ</p>
+        </div>
+
+        <button onclick="closeDetailModal()" class="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+        <div class="p-3 rounded-xl bg-cyber-surface border border-cyber-border">
+          <div class="text-[10px] text-slate-400">บริษัทที่รับ</div>
+          <div id="modalCompanies" class="text-lg font-bold text-white mt-0.5">-</div>
+        </div>
+        <div class="p-3 rounded-xl bg-cyber-surface border border-cyber-border">
+          <div class="text-[10px] text-slate-400">ตำแหน่งงาน</div>
+          <div id="modalPositions" class="text-lg font-bold text-cyan-300 mt-0.5">-</div>
+        </div>
+        <div class="p-3 rounded-xl bg-cyber-surface border border-cyber-border">
+          <div class="text-[10px] text-slate-400">เบี้ยเลี้ยงเฉลี่ย</div>
+          <div id="modalStipendAvg" class="text-lg font-bold text-purple-300 mt-0.5">-</div>
+        </div>
+        <div class="p-3 rounded-xl bg-cyber-surface border border-cyber-border">
+          <div class="text-[10px] text-slate-400">ประมาณการ/เดือน</div>
+          <div id="modalStipendMonthly" class="text-xs font-bold text-amber-300 mt-1">-</div>
         </div>
       </div>
 
-      <form id="addEntryForm" onsubmit="handleAddEntrySubmit(event)" class="space-y-4 text-xs">
+      <div class="space-y-3 text-xs">
         <div>
-          <label class="block font-semibold text-slate-300 mb-1">ชื่อสายงาน (Job Category Name) *</label>
-          <input type="text" id="newCategoryName" required placeholder="เช่น Mobile Application Developer" class="w-full py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+          <div class="font-bold text-slate-300 mb-1">ตัวอย่างองค์กรชั้นนำที่เปิดรับ:</div>
+          <div id="modalEmployersList" class="flex flex-wrap gap-1.5">
+            <!-- Badges -->
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div>
+            <div class="font-bold text-slate-300 mb-1">ทักษะทางเทคนิคที่คาดหวัง:</div>
+            <div id="modalHardSkillsList" class="flex flex-wrap gap-1.5"></div>
+          </div>
+          <div>
+            <div class="font-bold text-slate-300 mb-1">เครื่องมือและซอฟต์แวร์:</div>
+            <div id="modalToolsList" class="flex flex-wrap gap-1.5"></div>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-cyber-border/80">
+          <div class="font-bold text-slate-300 mb-1">Soft Skills ที่จำเป็น:</div>
+          <div id="modalSoftSkillsList" class="flex flex-wrap gap-1.5"></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-[11px] text-slate-400">
+          <div>
+            <span class="font-bold text-slate-300">รูปแบบการทำงาน:</span>
+            <span id="modalWorkFormat" class="ml-1 text-slate-200"></span>
+          </div>
+          <div>
+            <span class="font-bold text-slate-300">พื้นที่หลัก:</span>
+            <span id="modalLocations" class="ml-1 text-slate-200"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2 border-t border-cyber-border">
+        <button onclick="closeDetailModal()" class="px-4 py-2 rounded-xl bg-cyber-surface hover:bg-slate-800 text-slate-300 text-xs font-bold transition">
+          ปิดหน้าต่าง
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL 2: ADD CATEGORY ENTRY MODAL                              -->
+  <!-- ============================================================== -->
+  <div id="addEntryModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
+    <div class="cyber-card w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 space-y-4 border-neon-pink/40 glow-pink">
+      
+      <div class="flex items-center justify-between border-b border-cyber-border pb-3">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-plus-circle text-neon-pink"></i>
+          เพิ่มข้อมูลกลุ่มสายงานใหม่ (Add Internship Category)
+        </h3>
+        <button onclick="closeAddEntryModal()" class="p-2 text-slate-400 hover:text-white rounded-lg transition">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <form id="addEntryForm" onsubmit="handleAddEntrySubmit(event)" class="space-y-3.5 text-xs">
+        <div>
+          <label class="block font-bold text-slate-300 mb-1">ชื่อกลุ่มสายงาน (Category Name):</label>
+          <input id="newCategoryName" type="text" required placeholder="เช่น Quantum Computing, Biotech..." class="w-full py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 focus:outline-none focus:border-neon-pink transition">
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-semibold text-slate-300 mb-1">กลุ่มสายงาน (Cluster) *</label>
-            <select id="newCategoryCluster" required class="w-full py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
-              <option value="Technology">Technology & Software</option>
-              <option value="Creative">Creative & Media</option>
-              <option value="Business">Business & Marketing</option>
-              <option value="Operations">Operations & Engineering</option>
+            <label class="block font-bold text-slate-300 mb-1">กลุ่มคลัสเตอร์ (Cluster):</label>
+            <select id="newCategoryCluster" class="w-full py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 focus:outline-none focus:border-neon-pink transition">
+              <option value="Technology">Technology</option>
+              <option value="Creative">Creative</option>
+              <option value="Business">Business</option>
+              <option value="Operations">Operations</option>
             </select>
           </div>
+
           <div>
-            <label class="block font-semibold text-slate-300 mb-1">จำนวนบริษัทเปิดรับ *</label>
-            <input type="number" id="newCategoryCompanies" required min="1" value="25" class="w-full py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+            <label class="block font-bold text-slate-300 mb-1">จำนวนบริษัท (Companies):</label>
+            <input id="newCategoryCompanies" type="number" required min="1" max="1000" value="45" class="w-full py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 focus:outline-none focus:border-neon-pink transition">
           </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-3">
+        <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-semibold text-slate-300 mb-1">จำนวนตำแหน่ง *</label>
-            <input type="number" id="newCategoryPositions" required min="1" value="75" class="w-full py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+            <label class="block font-bold text-slate-300 mb-1">จำนวนตำแหน่งงาน (Positions):</label>
+            <input id="newCategoryPositions" type="number" required min="1" max="5000" value="120" class="w-full py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 focus:outline-none focus:border-neon-pink transition">
           </div>
+
           <div>
-            <label class="block font-semibold text-slate-300 mb-1">เบี้ยเลี้ยงเฉลี่ย (บาท/วัน) *</label>
-            <input type="number" id="newCategoryAvgStipend" required min="100" value="450" class="w-full py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+            <label class="block font-bold text-slate-300 mb-1">เบี้ยเลี้ยงเฉลี่ย (บาท/วัน):</label>
+            <input id="newCategoryAvgStipend" type="number" required min="100" max="2000" value="420" class="w-full py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 focus:outline-none focus:border-neon-pink transition">
           </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-semibold text-slate-300 mb-1">เบี้ยเลี้ยงสูงสุด (บาท/วัน)</label>
-            <input type="number" id="newCategoryMaxStipend" required min="100" value="600" class="w-full py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
+            <label class="block font-bold text-slate-300 mb-1">เบี้ยเลี้ยงสูงสุด (บาท/วัน):</label>
+            <input id="newCategoryMaxStipend" type="number" required min="100" max="3000" value="600" class="w-full py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 focus:outline-none focus:border-neon-pink transition">
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">รูปแบบ Onsite (%):</label>
+            <input id="newFormatOnsite" type="number" min="0" max="100" value="30" class="w-full py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 focus:outline-none focus:border-neon-pink transition">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">รูปแบบ Hybrid (%):</label>
+            <input id="newFormatHybrid" type="number" min="0" max="100" value="50" class="w-full py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 focus:outline-none focus:border-neon-pink transition">
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-300 mb-1">รูปแบบ Remote (%):</label>
+            <input id="newFormatRemote" type="number" min="0" max="100" value="20" class="w-full py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 focus:outline-none focus:border-neon-pink transition">
           </div>
         </div>
 
         <div>
-          <label class="block font-semibold text-slate-300 mb-1">รูปแบบการทำงาน (รวม 100%)</label>
-          <div class="grid grid-cols-3 gap-2">
-            <div>
-              <span class="text-[10px] text-amber-400">On-site %</span>
-              <input type="number" id="newFormatOnsite" value="20" min="0" max="100" class="w-full py-1.5 px-2 rounded bg-slate-900 border border-slate-700 text-white text-center">
-            </div>
-            <div>
-              <span class="text-[10px] text-emerald-400">Hybrid %</span>
-              <input type="number" id="newFormatHybrid" value="60" min="0" max="100" class="w-full py-1.5 px-2 rounded bg-slate-900 border border-slate-700 text-white text-center">
-            </div>
-            <div>
-              <span class="text-[10px] text-indigo-400">Remote %</span>
-              <input type="number" id="newFormatRemote" value="20" min="0" max="100" class="w-full py-1.5 px-2 rounded bg-slate-900 border border-slate-700 text-white text-center">
-            </div>
-          </div>
+          <label class="block font-bold text-slate-300 mb-1">ทักษะทางเทคนิค (คั่นด้วยจุลภาค):</label>
+          <input id="newCategoryHardSkills" type="text" placeholder="Skill 1, Skill 2, Skill 3" value="Problem Solving, Analytics, Research" class="w-full py-2 px-3 rounded-xl bg-cyber-surface border border-cyber-border text-slate-200 focus:outline-none focus:border-neon-pink transition">
         </div>
 
-        <div>
-          <label class="block font-semibold text-slate-300 mb-1">ทักษะสำคัญ (Hard Skills) - คั่นด้วยจุลภาค</label>
-          <input type="text" id="newCategoryHardSkills" placeholder="Flutter, Swift, Kotlin, Firebase, REST API" value="Flutter, Kotlin, Firebase, REST API" class="w-full py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-indigo-500">
-        </div>
-
-        <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeAddEntryModal()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">ยกเลิก</button>
-          <button type="submit" class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-lg shadow-indigo-600/30">
+        <div class="flex justify-end gap-2 pt-3 border-t border-cyber-border">
+          <button type="button" onclick="closeAddEntryModal()" class="px-4 py-2 rounded-xl bg-cyber-surface hover:bg-slate-800 text-slate-400 font-bold transition">
+            ยกเลิก
+          </button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-gradient-to-r from-neon-pink to-neon-purple hover:brightness-110 text-white font-bold shadow-md glow-pink transition">
             บันทึกสายงานใหม่
           </button>
         </div>
       </form>
+
     </div>
   </div>
 
-  <!-- Global Footer -->
-  <footer class="border-t border-slate-800/80 bg-slate-900/50 mt-12 py-6 text-xs text-slate-500">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-2">
-        <span class="font-semibold text-slate-400">Thailand Internship Open Data Project 2026</span>
-        <span>•</span>
-        <span>Single-file Interactive SPA</span>
-      </div>
-      <div class="flex items-center gap-4 text-slate-400">
-        <span><i class="fa-solid fa-code text-brand-400"></i> Pure Vanilla JS & Tailwind CSS</span>
-        <span>•</span>
-        <span><i class="fa-solid fa-chart-pie text-cyan-400"></i> Chart.js Powered</span>
-      </div>
-    </div>
-  </footer>
+  <!-- HELPER SCRIPT FOR SIDEBAR & NAVIGATION -->
+  <script>
+    function toggleMobileSidebar() {
+      const sb = document.getElementById('mainSidebar');
+      if (sb) {
+        sb.classList.toggle('hidden');
+      }
+    }
 
-  <!-- ============================================================== -->
-  <!-- JAVASCRIPT LOGIC ENGINE & DATASET EMBEDDED                     -->
-  <!-- ============================================================== -->
+    function scrollToLiveTable() {
+      switchTab(1);
+      setTimeout(() => {
+        const el = document.getElementById('liveGridSection');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+
+    function syncGlobalSearch(val) {
+      const tableInput = document.getElementById('tableSearchInput');
+      if (tableInput) {
+        tableInput.value = val;
+        tableInput.dispatchEvent(new Event('input'));
+      }
+    }
+  </script>
+
+
+  <!-- JAVASCRIPT ENGINE -->
   <script>
     /* ==============================================================
        1. INITIAL DATASET: 20 Categories (Thailand Internship 2026)
@@ -1820,8 +1941,8 @@
           datasets: [{
             label: 'จำนวนตำแหน่งงาน',
             data: sortedData.map(d => d.positions),
-            backgroundColor: sortedData.map((d, i) => i === 0 ? '#818cf8' : i < 3 ? '#6366f1' : 'rgba(99, 102, 241, 0.4)'),
-            borderColor: '#6366f1',
+            backgroundColor: sortedData.map((d, i) => i === 0 ? '#00f0ff' : i < 3 ? '#ff2e93' : i < 6 ? '#a855f7' : 'rgba(0, 240, 255, 0.35)'),
+            borderColor: '#00f0ff',
             borderWidth: 1,
             borderRadius: 6
           }]
@@ -1859,8 +1980,8 @@
           labels: ['Hybrid (ไฮบริด)', 'On-site (เข้าออฟฟิศ)', 'Remote (ทำงานระยะไกล)'],
           datasets: [{
             data: [48.5, 38.2, 13.3],
-            backgroundColor: ['#10b981', '#f59e0b', '#6366f1'],
-            borderColor: '#0f172a',
+            backgroundColor: ['#00f0ff', '#ff2e93', '#8b5cf6'],
+            borderColor: '#13173d',
             borderWidth: 3,
             hoverOffset: 6
           }]
@@ -1892,7 +2013,7 @@
           datasets: [{
             label: 'สัดส่วนเปิดรับ (%)',
             data: [64.5, 12.8, 9.2, 4.5, 3.2, 5.8],
-            backgroundColor: ['#6366f1', '#06b6d4', '#ec4899', '#f97316', '#10b981', '#8b5cf6'],
+            backgroundColor: ['#00f0ff', '#ff2e93', '#a855f7', '#fb923c', '#10b981', '#3b82f6'],
             borderRadius: 6
           }]
         },
@@ -2356,7 +2477,7 @@
             label: 'ระดับความต้องการ (%)',
             data: data,
             backgroundColor: 'rgba(99, 102, 241, 0.85)',
-            borderColor: '#6366f1',
+            borderColor: '#00f0ff',
             borderWidth: 1,
             borderRadius: 6
           }];
@@ -2369,7 +2490,7 @@
               label: item.category,
               data: labels.map((_, i) => 95 - (i * 12)),
               backgroundColor: 'rgba(99, 102, 241, 0.85)',
-              borderColor: '#6366f1',
+              borderColor: '#00f0ff',
               borderWidth: 1,
               borderRadius: 6
             }];
@@ -2393,7 +2514,7 @@
               label: itemA.category,
               data: dataA,
               backgroundColor: 'rgba(99, 102, 241, 0.85)',
-              borderColor: '#6366f1',
+              borderColor: '#00f0ff',
               borderWidth: 1,
               borderRadius: 6
             },
@@ -2401,7 +2522,7 @@
               label: itemB.category,
               data: dataB,
               backgroundColor: 'rgba(236, 72, 153, 0.85)',
-              borderColor: '#ec4899',
+              borderColor: '#ff2e93',
               borderWidth: 1,
               borderRadius: 6
             }
@@ -2480,7 +2601,7 @@
           label: item ? item.category : 'All Categories',
           data: getRadarData(item),
           backgroundColor: 'rgba(236, 72, 153, 0.25)',
-          borderColor: '#ec4899',
+          borderColor: '#ff2e93',
           pointBackgroundColor: '#ec4899',
           pointBorderColor: '#fff',
           borderWidth: 2
@@ -2493,7 +2614,7 @@
             label: itemA?.category || 'Field A',
             data: getRadarData(itemA),
             backgroundColor: 'rgba(99, 102, 241, 0.25)',
-            borderColor: '#6366f1',
+            borderColor: '#00f0ff',
             pointBackgroundColor: '#6366f1',
             pointBorderColor: '#fff',
             borderWidth: 2
@@ -2502,7 +2623,7 @@
             label: itemB?.category || 'Field B',
             data: getRadarData(itemB),
             backgroundColor: 'rgba(236, 72, 153, 0.25)',
-            borderColor: '#ec4899',
+            borderColor: '#ff2e93',
             pointBackgroundColor: '#ec4899',
             pointBorderColor: '#fff',
             borderWidth: 2
@@ -3189,5 +3310,8 @@
       renderTable();
     });
   </script>
+</body>
+</html>
+
 </body>
 </html>
