@@ -6,6 +6,18 @@ An interactive, responsive single-file web dashboard analyzing open data on inte
 📁 **Repository:** [https://github.com/kanokwantho/dasboard_by_666](https://github.com/kanokwantho/dasboard_by_666)  
 
 ---
+## สมาชิก
+1.นางสาวกนกวรรณ ทองเทพ รหัสนักศึกษา 673020243-5 
+   
+2.นางสาวณิรดา อนุนิวัฒน์ รหัสนักศึกษา 673020252-4 
+   
+3.นายภูธิป ต้นโลห์ รหัสนักศึกษา 673020261-3  
+
+4.นางสาวสุพิชชา คำสิงห์ รหัสนักศึกษา 673020265-5 
+
+5.นายสุวิชชา ผาสุข รหัสนักศึกษา 673020267-1 
+
+6.นายอพิชัย อิ่มวงค์ รหัสนักศึกษา 673020269-7 
 
 ## 📌 Executive Summary & Project Purpose
 
